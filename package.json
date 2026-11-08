@@ -1,0 +1,12 @@
+{
+  "name": "tahleel-dz",
+  "version": "1.0.0",
+  "description": "تحليل DZ - منصة تحليل الفيديو الرياضي الاحترافية",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve ."
+  },
+  "keywords": ["sports", "video-analysis", "dartfish", "livetag", "once-sport"],
+  "author": "benabdallahhouari652-svg",
+  "license": "MIT"
+}
