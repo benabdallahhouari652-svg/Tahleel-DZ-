@@ -308,38 +308,89 @@
             </div>
           </div>
 
-          <!-- Drawing Tools Bar -->
+          <!-- Advanced Video Telestration & Drawing Tools Bar -->
           <div class="draw-toolbar" id="drawToolbar">
-            <span class="draw-toolbar__label">أدوات الرسم:</span>
-            <button class="draw-tool active" data-tool="arrow" title="سهم">
+            <span class="draw-toolbar__label">🎨 أدوات التحليل:</span>
+            
+            <!-- Group 1: Spotlights & Rings -->
+            <button class="draw-tool" data-tool="spotlight" title="🔦 كشاف الضوء (تسليط الضوء على اللاعب وتعتيم المحيط)">
+              <svg viewBox="0 0 20 20" width="16"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity=".3"/><circle cx="10" cy="10" r="3" fill="currentColor"/></svg>
+            </button>
+            <button class="draw-tool" data-tool="player-ring" title="🎯 حلقة أرضية ثلاثية الأبعاد تحت قدمي اللاعب">
+              <svg viewBox="0 0 20 20" width="16"><ellipse cx="10" cy="10" rx="8" ry="4" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity=".2"/></svg>
+            </button>
+            <button class="draw-tool" data-tool="player-link" title="📏 خط ربط تكتيكي مع حساب المسافة بين اللاعبين">
+              <svg viewBox="0 0 20 20" width="16"><line x1="3" y1="16" x2="17" y2="4" stroke="currentColor" stroke-width="2" stroke-dasharray="3,2"/><circle cx="3" cy="16" r="2.5" fill="currentColor"/><circle cx="17" cy="4" r="2.5" fill="currentColor"/></svg>
+            </button>
+            
+            <div class="draw-toolbar__sep"></div>
+
+            <!-- Group 2: Tactical Arrows & Movement -->
+            <button class="draw-tool active" data-tool="arrow" title="➡️ سهم حركة مستقيم">
               <svg viewBox="0 0 20 20" width="16"><line x1="4" y1="16" x2="16" y2="4" stroke="currentColor" stroke-width="2"/><polyline points="10,4 16,4 16,10" fill="none" stroke="currentColor" stroke-width="2"/></svg>
             </button>
-            <button class="draw-tool" data-tool="line" title="خط">
-              <svg viewBox="0 0 20 20" width="16"><line x1="3" y1="17" x2="17" y2="3" stroke="currentColor" stroke-width="2"/></svg>
+            <button class="draw-tool" data-tool="curved-arrow" title="⤴️ سهم مقوس (تمريرة منحنية / التفاف)">
+              <svg viewBox="0 0 20 20" width="16"><path d="M4 16 Q6 5 15 6" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="12,2 16,6 12,10" fill="none" stroke="currentColor" stroke-width="2"/></svg>
             </button>
-            <button class="draw-tool" data-tool="circle" title="دائرة">
+            <button class="draw-tool" data-tool="dribble" title="〰️ مسار مراوغة وجري متعرج بالكرة">
+              <svg viewBox="0 0 20 20" width="16"><path d="M3 16 L6 13 L9 16 L12 11 L15 14 L17 8" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="13,8 17,8 17,12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+            </button>
+
+            <div class="draw-toolbar__sep"></div>
+
+            <!-- Group 3: Shapes & Highlights -->
+            <button class="draw-tool" data-tool="circle" title="⭕ دائرة لتحديد اللاعب">
               <svg viewBox="0 0 20 20" width="16"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="2" fill="none"/></svg>
             </button>
-            <button class="draw-tool" data-tool="rect" title="مستطيل">
-              <svg viewBox="0 0 20 20" width="16"><rect x="3" y="5" width="14" height="10" rx="1" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+            <button class="draw-tool" data-tool="rect" title="🔲 منطقة تكتيكية مظللة (مساحة بين الخطوط)">
+              <svg viewBox="0 0 20 20" width="16"><rect x="3" y="5" width="14" height="10" rx="1.5" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity=".2"/></svg>
             </button>
-            <button class="draw-tool" data-tool="freehand" title="رسم حر">
+            <button class="draw-tool" data-tool="angle" title="📐 قياس زاوية الرؤية والتسديد على المرمى">
+              <svg viewBox="0 0 20 20" width="16"><path d="M4 16 L16 16 M4 16 L14 6" stroke="currentColor" stroke-width="2"/><path d="M8 16 A 5 5 0 0 0 10 12" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+            </button>
+            <button class="draw-tool" data-tool="laser" title="⚡ ليزر متوهج نيون">
+              <svg viewBox="0 0 20 20" width="16"><path d="M3 17 L10 10 L8 7 L17 3 L13 12 L10 10" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity=".3"/></svg>
+            </button>
+            <button class="draw-tool" data-tool="freehand" title="✏️ رسم حر بالقلم">
               <svg viewBox="0 0 20 20" width="16"><path d="M3 16 Q8 5 13 10 T18 4" stroke="currentColor" stroke-width="2" fill="none"/></svg>
             </button>
-            <button class="draw-tool" data-tool="text" title="نص">T</button>
+            <button class="draw-tool" data-tool="text" title="🏷️ بطاقة تكتيكية واسم اللاعب">T</button>
+
             <div class="draw-toolbar__sep"></div>
-            <label class="color-pick-wrap">
+
+            <!-- Quick Color Palette -->
+            <div class="draw-colors-quick">
+              <button class="draw-color-btn active" data-color="#00D4FF" style="background:#00D4FF" title="أزرق نيون"></button>
+              <button class="draw-color-btn" data-color="#FFD166" style="background:#FFD166" title="أصفر"></button>
+              <button class="draw-color-btn" data-color="#FF6B6B" style="background:#FF6B6B" title="أحمر"></button>
+              <button class="draw-color-btn" data-color="#10B981" style="background:#10B981" title="أخضر"></button>
+              <button class="draw-color-btn" data-color="#FF8C42" style="background:#FF8C42" title="برتقالي"></button>
+              <button class="draw-color-btn" data-color="#FFFFFF" style="background:#FFFFFF" title="أبيض"></button>
+            </div>
+
+            <!-- Custom Color Picker -->
+            <label class="color-pick-wrap" title="لون مخصص">
               <input type="color" id="drawColor" value="#00D4FF" class="color-pick">
               <svg viewBox="0 0 20 20" width="14"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="2" fill="none"/></svg>
             </label>
-            <select id="drawLineWidth" class="draw-select">
-              <option value="2">رفيع</option>
-              <option value="4" selected>متوسط</option>
-              <option value="6">سميك</option>
+
+            <!-- Line Width -->
+            <select id="drawLineWidth" class="draw-select" title="سماكة الخط">
+              <option value="2">رفيع (2px)</option>
+              <option value="4" selected>متوسط (4px)</option>
+              <option value="6">سميك (6px)</option>
+              <option value="8">عريض (8px)</option>
             </select>
+
             <div class="draw-toolbar__sep"></div>
-            <button class="draw-tool" id="undoBtn" title="تراجع">↩</button>
-            <button class="draw-tool" id="clearCanvasBtn" title="مسح الكل">✕</button>
+
+            <!-- Actions -->
+            <button class="draw-tool" id="undoBtn" title="تراجع (Ctrl+Z)">↩</button>
+            <button class="draw-tool" id="redoBtn" title="إعادة (Ctrl+Y)">↪</button>
+            <button class="draw-tool" id="clearCanvasBtn" title="مسح كل الرسومات">🗑️</button>
+
+            <div class="draw-toolbar__sep"></div>
+            <button class="btn btn--sm btn--accent" id="captureFrameBtn" title="تصدير لقطة الفيديو الحالية مع الرسومات كصورة HD">📸 لقطة HD</button>
           </div>
         </div>
 
