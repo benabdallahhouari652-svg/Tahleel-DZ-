@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initSpeedControls();
   initTimelineInteraction();
   initClipList();
+  initClipExportEngine();
 });
 
 // ── Video Loading ─────────────────────────────────────────
@@ -683,4 +684,208 @@ function captureFrameWithDrawings() {
   a.click();
   showToast('📸 تم حفظ وتصدير لقطة الفيديو مع الرسومات بدقة عالية!', 'success');
 }
+
+// ── Video Clip Recording & Export Engine (MP4 / WebM) ─────
+let clipMediaRecorder = null;
+let clipRecordedChunks = [];
+let clipRecordingTimer = null;
+let clipRecordingAnimId = null;
+let clipSelectedDuration = 10; // Default 10s
+
+function initClipExportEngine() {
+  const openModalBtn = document.getElementById('openClipExportModalBtn');
+  const modal = document.getElementById('exportClipModal');
+  const closeModalBtn = document.getElementById('closeExportClipModal');
+  const cancelBtn = document.getElementById('cancelExportClipBtn');
+  const startBtn = document.getElementById('startRecordingClipBtn');
+  const stopBtn = document.getElementById('stopRecBtn');
+
+  // Open / Close Modal
+  openModalBtn?.addEventListener('click', () => {
+    const video = document.getElementById('mainVideo');
+    if (!video || !video.src || video.style.display === 'none') {
+      showToast('يرجى تشغيل فيديو أولاً (أو اضغط على زر "⚡ تشغيل فيديو تجريبي")', 'info');
+      return;
+    }
+    if (modal) modal.style.display = 'flex';
+  });
+
+  [closeModalBtn, cancelBtn].forEach(b => {
+    b?.addEventListener('click', () => {
+      if (modal) modal.style.display = 'none';
+    });
+  });
+
+  // Duration buttons
+  document.querySelectorAll('.clip-dur-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.clip-dur-btn').forEach(b => {
+        b.classList.remove('active', 'btn--primary');
+        b.classList.add('btn--ghost');
+      });
+      btn.classList.add('active', 'btn--primary');
+      btn.classList.remove('btn--ghost');
+      clipSelectedDuration = parseInt(btn.dataset.dur || '10');
+    });
+  });
+
+  // Start Recording
+  startBtn?.addEventListener('click', () => {
+    if (modal) modal.style.display = 'none';
+    const watermarkText = document.getElementById('clipWatermarkText')?.value.trim() || '';
+    const includeWatermark = document.getElementById('includeWatermarkCheck')?.checked ?? true;
+    startVideoClipExport(clipSelectedDuration, watermarkText, includeWatermark);
+  });
+
+  // Stop Recording
+  stopBtn?.addEventListener('click', stopVideoClipExport);
+}
+
+function startVideoClipExport(duration, watermarkText, includeWatermark) {
+  const video = document.getElementById('mainVideo');
+  const drawCanvas = document.getElementById('drawCanvas');
+  const indicator = document.getElementById('videoRecIndicator');
+  const timerText = document.getElementById('recTimerText');
+
+  if (!video || !drawCanvas) {
+    showToast('تعذر الوصول إلى مشغل الفيديو', 'error');
+    return;
+  }
+
+  // Create recording canvas
+  const w = video.videoWidth || drawCanvas.width || 1280;
+  const h = video.videoHeight || drawCanvas.height || 720;
+  const recCanvas = document.createElement('canvas');
+  recCanvas.width = w;
+  recCanvas.height = h;
+  const rctx = recCanvas.getContext('2d');
+
+  // Stream at 30 fps
+  const stream = recCanvas.captureStream(30);
+
+  // Best supported video type
+  const candidateTypes = [
+    'video/mp4;codecs=avc1',
+    'video/mp4',
+    'video/webm;codecs=vp9',
+    'video/webm;codecs=vp8',
+    'video/webm'
+  ];
+  let mimeType = '';
+  for (const t of candidateTypes) {
+    if (MediaRecorder.isTypeSupported(t)) {
+      mimeType = t;
+      break;
+    }
+  }
+
+  try {
+    clipMediaRecorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
+  } catch (err) {
+    showToast('تعذر بدء التسجيل: ' + err.message, 'error');
+    return;
+  }
+
+  clipRecordedChunks = [];
+  clipMediaRecorder.ondataavailable = e => {
+    if (e.data && e.data.size > 0) clipRecordedChunks.push(e.data);
+  };
+
+  clipMediaRecorder.onstop = () => {
+    cancelAnimationFrame(clipRecordingAnimId);
+    if (clipRecordingTimer) clearInterval(clipRecordingTimer);
+    if (indicator) indicator.style.display = 'none';
+
+    if (clipRecordedChunks.length === 0) {
+      showToast('لم يتم تسجيل بيانات كافية للقطة', 'error');
+      return;
+    }
+
+    const blobType = clipMediaRecorder.mimeType || 'video/webm';
+    const isMp4 = blobType.includes('mp4');
+    const ext = isMp4 ? 'mp4' : 'webm';
+    const blob = new Blob(clipRecordedChunks, { type: blobType });
+
+    const downloadUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const safeTitle = (watermarkText || 'Tactical_Clip').replace(/\s+/g, '_');
+    a.download = `Tahleel_${safeTitle}_${Date.now()}.${ext}`;
+    a.href = downloadUrl;
+    a.click();
+
+    showToast(`🎥 تم تصدير لقطة الفيديو بنجاح بصيغة (${ext.toUpperCase()}) جاهزة للمشاركة!`, 'success');
+  };
+
+  // Play video
+  video.play();
+  clipMediaRecorder.start(250); // Slice every 250ms
+
+  // Show indicator
+  if (indicator) indicator.style.display = 'flex';
+  let elapsed = 0;
+
+  function renderRecFrame() {
+    // 1. Draw video frame
+    try {
+      rctx.drawImage(video, 0, 0, w, h);
+    } catch (_) {
+      rctx.fillStyle = '#0f172a';
+      rctx.fillRect(0, 0, w, h);
+    }
+
+    // 2. Draw overlay telestration drawings
+    rctx.drawImage(drawCanvas, 0, 0, w, h);
+
+    // 3. Optional tactical banner
+    if (includeWatermark) {
+      rctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+      rctx.fillRect(0, h - 46, w, 46);
+
+      rctx.fillStyle = '#00D4FF';
+      rctx.font = 'bold 16px Cairo, sans-serif';
+      rctx.textAlign = 'right';
+      rctx.fillText(watermarkText || '🎯 تحليل DZ — لقطة تكتيكية', w - 20, h - 17);
+
+      const tStr = formatTime(video.currentTime || 0);
+      rctx.fillStyle = '#94a3b8';
+      rctx.font = '14px Cairo, sans-serif';
+      rctx.textAlign = 'left';
+      rctx.fillText(`⏱️ توقيت اللقطة: ${tStr}`, 20, h - 17);
+    }
+
+    clipRecordingAnimId = requestAnimationFrame(renderRecFrame);
+  }
+
+  clipRecordingAnimId = requestAnimationFrame(renderRecFrame);
+
+  // Timer countdown
+  if (timerText) {
+    timerText.textContent = duration > 0
+      ? `🔴 جاري تسجيل اللقطة... 00:00 / 00:${duration.toString().padStart(2, '0')}`
+      : `🔴 جاري التسجيل المباشر... 00:00`;
+  }
+
+  clipRecordingTimer = setInterval(() => {
+    elapsed++;
+    const elStr = `00:${elapsed.toString().padStart(2, '0')}`;
+    if (timerText) {
+      timerText.textContent = duration > 0
+        ? `🔴 جاري تسجيل اللقطة... ${elStr} / 00:${duration.toString().padStart(2, '0')}`
+        : `🔴 جاري التسجيل المباشر... ${elStr}`;
+    }
+
+    if (duration > 0 && elapsed >= duration) {
+      stopVideoClipExport();
+    }
+  }, 1000);
+
+  showToast('🔴 بدأ تسجيل لقطة الفيديو مع الرسومات التكتيكية...', 'info');
+}
+
+function stopVideoClipExport() {
+  if (clipMediaRecorder && clipMediaRecorder.state !== 'inactive') {
+    clipMediaRecorder.stop();
+  }
+}
+
 

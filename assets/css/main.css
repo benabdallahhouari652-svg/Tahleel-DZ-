@@ -709,6 +709,39 @@ body {
   cursor: pointer;
 }
 
+/* Video Clip Recording Overlay */
+.video-rec-indicator {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(239, 68, 68, 0.7);
+  box-shadow: 0 4px 25px rgba(239, 68, 68, 0.4);
+  border-radius: 20px;
+  padding: 6px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 60;
+  color: #fff;
+  font-size: .82rem;
+  font-weight: 700;
+  animation: fadeInDown .2s ease;
+}
+.rec-dot-pulse {
+  width: 10px;
+  height: 10px;
+  background: #ef4444;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #ef4444;
+  animation: recBlink 1s infinite alternate;
+}
+@keyframes recBlink {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0.3; transform: scale(0.8); }
+}
+
 /* Tag Panel (Right Sidebar) */
 .tag-panel {
   background: var(--sidebar-bg);

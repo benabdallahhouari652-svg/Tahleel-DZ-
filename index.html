@@ -256,8 +256,15 @@
                 <small>MP4, MOV, AVI, MKV مدعوم</small>
               </div>
             </div>
-            <video id="mainVideo" style="display:none; width:100%; height:100%; object-fit:contain;" controls></video>
+            <video id="mainVideo" crossorigin="anonymous" style="display:none; width:100%; height:100%; object-fit:contain;" controls></video>
             <canvas id="drawCanvas" class="draw-canvas"></canvas>
+
+            <!-- Video Clip Recording Pulse Indicator -->
+            <div class="video-rec-indicator" id="videoRecIndicator" style="display:none;">
+              <span class="rec-dot-pulse"></span>
+              <span id="recTimerText">🔴 جاري تسجيل اللقطة... 00:00 / 00:10</span>
+              <button class="btn btn--sm btn--danger" id="stopRecBtn" style="padding: 2px 8px; font-size: 11px;">إيقاف وحفظ الآن</button>
+            </div>
             <div class="video-overlay-controls" id="videoOverlayControls" style="display:none">
               <div class="vc-speed-btns">
                 <button class="vc-btn" data-speed="0.25">¼x</button>
@@ -391,6 +398,7 @@
 
             <div class="draw-toolbar__sep"></div>
             <button class="btn btn--sm btn--accent" id="captureFrameBtn" title="تصدير لقطة الفيديو الحالية مع الرسومات كصورة HD">📸 لقطة HD</button>
+            <button class="btn btn--sm btn--primary" id="openClipExportModalBtn" title="تصدير وتسجيل لقطة فيديو مدمجة بالرسومات التكتيكية (MP4 / WebM)">🎥 تصدير فيديو (Clip)</button>
           </div>
         </div>
 
@@ -1030,6 +1038,42 @@
       </div>
       <div class="modal__footer">
         <button class="btn btn--ghost" id="closeLibraryFooterBtn">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Export Video Clip Modal -->
+  <div class="modal-overlay" id="exportClipModal" style="display:none">
+    <div class="modal" style="max-width: 520px;">
+      <div class="modal__header">
+        <h3>🎥 تصدير لقطة فيديو مدمجة بالرسومات التكتيكية</h3>
+        <button class="modal__close" id="closeExportClipModal">✕</button>
+      </div>
+      <div class="modal__body">
+        <p style="font-size:0.86rem; color:var(--text-muted); line-height:1.5; margin-bottom:14px;">
+          سيقوم التطبيق بتشغيل اللقطة وتسجيلها مدمجاً معها كشافات الضوء، الأسهم، والحلقات التكتيكية التي رسمتها وتنزيلها كملف فيديو لمشاركتها عبر واتساب أو العرض في غرفة الملابس.
+        </p>
+        <div class="form-group">
+          <label>مدة اللقطة المراد تسجيلها وتصديرها:</label>
+          <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
+            <button class="btn btn--sm btn--ghost clip-dur-btn" data-dur="5">⚡ 5 ثوانٍ</button>
+            <button class="btn btn--sm btn--primary clip-dur-btn active" data-dur="10">🔥 10 ثوانٍ (موصى به)</button>
+            <button class="btn btn--sm btn--ghost clip-dur-btn" data-dur="15">⏱️ 15 ثانية</button>
+            <button class="btn btn--sm btn--ghost clip-dur-btn" data-dur="0">🔴 تسجيل يدوي (حر)</button>
+          </div>
+        </div>
+        <div class="form-group" style="margin-top:14px;">
+          <label>عنوان اللقطة التكتيكية (شريط أسفل الفيديو):</label>
+          <input type="text" id="clipWatermarkText" class="tag-input" placeholder="مثال: تحليل التحول الهجومي السريع والضغط" style="width:100%">
+        </div>
+        <div class="form-group" style="display:flex; align-items:center; gap:8px; margin-top:12px;">
+          <input type="checkbox" id="includeWatermarkCheck" checked style="cursor:pointer; width:16px; height:16px;">
+          <label for="includeWatermarkCheck" style="cursor:pointer; font-size:0.84rem; color:var(--text-muted);">إضافة شريط "تحليل DZ 🇩🇿" وتوقيت المباراة الاحترافي أسفل الفيديو</label>
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--primary" id="startRecordingClipBtn">▶ بدء التسجيل والتصدير الآن</button>
+        <button class="btn btn--ghost" id="cancelExportClipBtn">إلغاء</button>
       </div>
     </div>
   </div>
