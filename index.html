@@ -197,43 +197,15 @@
         <!-- Left Sidebar: Clip List -->
         <aside class="analyzer-sidebar">
           <div class="sidebar-header">
-            <h3>المقاطع</h3>
-            <button class="btn btn--sm btn--primary" id="addClipBtn">+ إضافة</button>
+            <h3>قائمة المقاطع</h3>
+            <div style="display:flex; gap:6px;">
+              <button class="btn btn--sm btn--accent" id="presentationModeBtn" title="عرض المحاضرة الفنية لجميع المقاطع بالتسلسل">🎬 عرض الكل</button>
+              <button class="btn btn--sm btn--primary" id="addClipBtn" title="إضافة مقطع جديد">+ قص</button>
+            </div>
           </div>
-          <input type="text" class="search-input" placeholder="بحث في المقاطع...">
+          <input type="text" id="searchClipsInput" class="search-input" placeholder="بحث في المقاطع التكتيكية...">
           <div class="clip-list" id="clipList">
-            <div class="clip-item active" data-time="0">
-              <div class="clip-thumb"><span>▶</span></div>
-              <div class="clip-meta">
-                <strong>هجمة مضادة #1</strong>
-                <span>0:00 — 0:32</span>
-              </div>
-              <span class="clip-tag-count">12</span>
-            </div>
-            <div class="clip-item" data-time="95">
-              <div class="clip-thumb"><span>▶</span></div>
-              <div class="clip-meta">
-                <strong>ركلة حرة #3</strong>
-                <span>1:35 — 2:14</span>
-              </div>
-              <span class="clip-tag-count">8</span>
-            </div>
-            <div class="clip-item" data-time="220">
-              <div class="clip-thumb"><span>▶</span></div>
-              <div class="clip-meta">
-                <strong>هدف الفريق أ</strong>
-                <span>3:40 — 4:02</span>
-              </div>
-              <span class="clip-tag-count">5</span>
-            </div>
-            <div class="clip-item" data-time="380">
-              <div class="clip-thumb"><span>▶</span></div>
-              <div class="clip-meta">
-                <strong>موقف دفاعي خاطئ</strong>
-                <span>6:20 — 7:05</span>
-              </div>
-              <span class="clip-tag-count">21</span>
-            </div>
+            <!-- Dynamically populated by JS with rich tactical clips -->
           </div>
         </aside>
 
@@ -265,6 +237,25 @@
               <span id="recTimerText">🔴 جاري تسجيل اللقطة... 00:00 / 00:10</span>
               <button class="btn btn--sm btn--danger" id="stopRecBtn" style="padding: 2px 8px; font-size: 11px;">إيقاف وحفظ الآن</button>
             </div>
+
+            <!-- Coach Presentation Mode Overlay Banner -->
+            <div class="presentation-overlay" id="presentationOverlay" style="display:none;">
+              <div class="presentation-badge">
+                <span class="pres-live-dot"></span>
+                <span>🎬 المحاضرة الفنية للمدرب</span>
+              </div>
+              <div class="presentation-info">
+                <strong id="presClipTitle">هجمة مضادة #1</strong>
+                <span id="presClipProgress">لقطة 1 من 4</span>
+              </div>
+              <div class="presentation-controls">
+                <button class="pres-btn" id="presPrevBtn" title="اللقطة السابقة">⏮ سابق</button>
+                <button class="pres-btn" id="presPlayPauseBtn" title="إيقاف مؤقت للشرح">⏸ إيقاف للشرح</button>
+                <button class="pres-btn" id="presNextBtn" title="اللقطة التالية">تالية ⏭</button>
+                <button class="pres-btn pres-btn--exit" id="presExitBtn" title="إنهاء العرض التقديمي">✕ خروج</button>
+              </div>
+            </div>
+
             <div class="video-overlay-controls" id="videoOverlayControls" style="display:none">
               <div class="vc-speed-btns">
                 <button class="vc-btn" data-speed="0.25">¼x</button>
@@ -273,6 +264,53 @@
                 <button class="vc-btn" data-speed="2">2x</button>
                 <button class="vc-btn" data-speed="4">4x</button>
               </div>
+            </div>
+          </div>
+
+          <!-- Professional Video Trimmer & Precise Frame Navigation Bar -->
+          <div class="video-trimmer-bar" id="videoTrimmerBar">
+            <div class="vtb-group" title="تحديد نقاط البداية والنهاية للقطة">
+              <button class="vtb-btn" id="markInBtn" title="تحديد بداية اللقطة [In] (اختصار لوحة المفاتيح: I)">
+                <span class="vtb-key">I</span> [ In
+              </button>
+              <button class="vtb-btn" id="markOutBtn" title="تحديد نهاية اللقطة [Out] (اختصار لوحة المفاتيح: O)">
+                ] Out <span class="vtb-key">O</span>
+              </button>
+              <button class="vtb-btn vtb-btn--accent" id="quick10sClipBtn" title="تحديد نطاق تلقائي 10 ثوانٍ حول التوقيت الحالي (±5 ثوانٍ)">
+                ⚡ لقطة 10 ثوانٍ
+              </button>
+            </div>
+
+            <div class="vtb-sep"></div>
+
+            <!-- Jog Shuttle & Frame Navigation -->
+            <div class="vtb-group" title="التنقل الدقيق إطاراً بإطار">
+              <button class="vtb-btn" id="stepBackFrameBtn" title="إطار للخلف -1 Frame (0.04s) — اختصار: ,">⏮ إطار</button>
+              <button class="vtb-btn" id="jumpBack5sBtn" title="رجوع 5 ثوانٍ">⏪ 5s-</button>
+              <button class="vtb-btn vtb-btn--play" id="trimmerPlayPauseBtn" title="تشغيل / إيقاف مؤقت (Space)">▶</button>
+              <button class="vtb-btn" id="jumpFwd5sBtn" title="تقديم 5 ثوانٍ">+5s ⏩</button>
+              <button class="vtb-btn" id="stepFwdFrameBtn" title="إطار للأمام +1 Frame (0.04s) — اختصار: .">إطار ⏭</button>
+            </div>
+
+            <div class="vtb-sep"></div>
+
+            <!-- Trim Range Info Badge -->
+            <div class="vtb-range-badge" id="vtbRangeBadge" title="النطاق الزمني المحدد حالياً للقطة">
+              <span class="vtb-range-icon">✂️</span>
+              <span class="vtb-range-val" id="vtbRangeVal">0:00.0 ➔ 0:10.0</span>
+              <span class="vtb-range-dur" id="vtbRangeDur">(10.0 ث)</span>
+            </div>
+
+            <div class="vtb-actions">
+              <button class="vtb-btn" id="loopRangeBtn" title="تشغيل وتكرار المقطع المحدد باستمرار لدراسة الحالة (اختصار: L)">
+                🔁 تكرار اللقطة
+              </button>
+              <button class="btn btn--sm btn--primary" id="saveTrimmedClipBtn" title="قص وحفظ اللقطة في قائمة المقاطع">
+                ✂️ حفظ اللقطة
+              </button>
+              <button class="btn btn--sm btn--accent" id="exportTrimmedClipBtn" title="تصدير وتنزيل اللقطة المقصوصة مباشرة كملف فيديو MP4/WebM">
+                🎥 تصدير اللقطة (MP4)
+              </button>
             </div>
           </div>
 
@@ -294,6 +332,14 @@
             </div>
             <div class="tl-track-area" id="tlTrackArea">
               <div class="tl-ruler" id="tlRuler"></div>
+              
+              <!-- Draggable In/Out Range Highlight Overlay -->
+              <div class="tl-range-highlight" id="tlRangeHighlight" style="display:none;">
+                <div class="tl-range-handle tl-range-handle--start" id="tlRangeHandleIn" title="سحب بداية اللقطة [In]"></div>
+                <div class="tl-range-label" id="tlRangeLabel">نطاق اللقطة</div>
+                <div class="tl-range-handle tl-range-handle--end" id="tlRangeHandleOut" title="سحب نهاية اللقطة [Out]"></div>
+              </div>
+
               <!-- Tag tracks -->
               <div class="tl-track" data-label="هجوم" data-color="#00D4FF">
                 <div class="tl-track-label">هجوم</div>
@@ -319,12 +365,18 @@
           <div class="draw-toolbar" id="drawToolbar">
             <span class="draw-toolbar__label">🎨 أدوات التحليل:</span>
             
-            <!-- Group 1: Spotlights & Rings -->
+            <!-- Group 1: Spotlights, Magnifier & Rings -->
             <button class="draw-tool" data-tool="spotlight" title="🔦 كشاف الضوء (تسليط الضوء على اللاعب وتعتيم المحيط)">
               <svg viewBox="0 0 20 20" width="16"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity=".3"/><circle cx="10" cy="10" r="3" fill="currentColor"/></svg>
             </button>
+            <button class="draw-tool" data-tool="magnifier" title="🔍 عدسة تكبير تفصيلية (VAR Zoom 2.5x) لتوضيح حركة الأقدام ولمسات اليد">
+              <svg viewBox="0 0 20 20" width="16"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="2" fill="none"/><line x1="13" y1="13" x2="18" y2="18" stroke="currentColor" stroke-width="2.5"/><line x1="8" y1="5" x2="8" y2="11" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="8" x2="11" y2="8" stroke="currentColor" stroke-width="1.5"/></svg>
+            </button>
             <button class="draw-tool" data-tool="player-ring" title="🎯 حلقة أرضية ثلاثية الأبعاد تحت قدمي اللاعب">
               <svg viewBox="0 0 20 20" width="16"><ellipse cx="10" cy="10" rx="8" ry="4" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity=".2"/></svg>
+            </button>
+            <button class="draw-tool" data-tool="player-badge" title="🎽 شارة وبطاقة اللاعب الذكية (#10 - اسم اللاعب والدور التكتيكي)">
+              <svg viewBox="0 0 20 20" width="16"><rect x="3" y="2" width="14" height="9" rx="2" stroke="currentColor" stroke-width="1.5" fill="currentColor" fill-opacity=".2"/><line x1="10" y1="11" x2="10" y2="16" stroke="currentColor" stroke-width="2"/><ellipse cx="10" cy="17" rx="5" ry="2" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
             </button>
             <button class="draw-tool" data-tool="player-link" title="📏 خط ربط تكتيكي مع حساب المسافة بين اللاعبين">
               <svg viewBox="0 0 20 20" width="16"><line x1="3" y1="16" x2="17" y2="4" stroke="currentColor" stroke-width="2" stroke-dasharray="3,2"/><circle cx="3" cy="16" r="2.5" fill="currentColor"/><circle cx="17" cy="4" r="2.5" fill="currentColor"/></svg>
@@ -339,13 +391,22 @@
             <button class="draw-tool" data-tool="curved-arrow" title="⤴️ سهم مقوس (تمريرة منحنية / التفاف)">
               <svg viewBox="0 0 20 20" width="16"><path d="M4 16 Q6 5 15 6" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="12,2 16,6 12,10" fill="none" stroke="currentColor" stroke-width="2"/></svg>
             </button>
+            <button class="draw-tool" data-tool="aerial-pass" title="🎯 قوس تمريرة هوائية ساقطة (Lofted / Chip Pass Arc) خلف خط الدفاع">
+              <svg viewBox="0 0 20 20" width="16"><path d="M3 16 Q10 2 17 14" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="3,2"/><circle cx="17" cy="14" r="2" fill="currentColor"/><line x1="3" y1="16" x2="17" y2="16" stroke="currentColor" stroke-width="1" stroke-dasharray="2,2" opacity=".6"/></svg>
+            </button>
             <button class="draw-tool" data-tool="dribble" title="〰️ مسار مراوغة وجري متعرج بالكرة">
               <svg viewBox="0 0 20 20" width="16"><path d="M3 16 L6 13 L9 16 L12 11 L15 14 L17 8" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="13,8 17,8 17,12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
             </button>
 
             <div class="draw-toolbar__sep"></div>
 
-            <!-- Group 3: Shapes & Highlights -->
+            <!-- Group 3: Shapes, Spaces & Highlights -->
+            <button class="draw-tool" data-tool="offside-line" title="📐 خط التسلل والعمق التكتيكي ثلاثي الأبعاد (3D Offside Line & Virtual Wall)">
+              <svg viewBox="0 0 20 20" width="16"><polygon points="3,16 17,16 17,7 3,7" fill="currentColor" fill-opacity=".25"/><line x1="3" y1="16" x2="17" y2="16" stroke="currentColor" stroke-width="2.5"/><line x1="3" y1="7" x2="17" y2="7" stroke="currentColor" stroke-width="1" stroke-dasharray="2,2"/></svg>
+            </button>
+            <button class="draw-tool" data-tool="space-polygon" title="🔷 تظليل المساحة الحرة (Tactical Free Space / Half-Spaces)">
+              <svg viewBox="0 0 20 20" width="16"><polygon points="5,5 15,3 17,14 6,17" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity=".25"/></svg>
+            </button>
             <button class="draw-tool" data-tool="circle" title="⭕ دائرة لتحديد اللاعب">
               <svg viewBox="0 0 20 20" width="16"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="2" fill="none"/></svg>
             </button>
@@ -1074,6 +1135,50 @@
       <div class="modal__footer">
         <button class="btn btn--primary" id="startRecordingClipBtn">▶ بدء التسجيل والتصدير الآن</button>
         <button class="btn btn--ghost" id="cancelExportClipBtn">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Save Trimmed Clip Modal -->
+  <div class="modal-overlay" id="saveClipModal" style="display:none">
+    <div class="modal" style="max-width: 500px;">
+      <div class="modal__header">
+        <h3>✂️ حفظ اللقطة المقصوصة في قائمة المقاطع</h3>
+        <button class="modal__close" id="closeSaveClipModal">✕</button>
+      </div>
+      <div class="modal__body">
+        <div class="form-group">
+          <label>اسم / عنوان اللقطة:</label>
+          <input type="text" id="newClipTitleInput" class="tag-input" placeholder="مثال: ضغط عكسي واسترجاع الكرة" style="width:100%">
+        </div>
+        <div class="form-group" style="margin-top:12px;">
+          <label>نوع الحدث / التاغ:</label>
+          <select id="newClipCategorySelect" class="sport-select" style="width:100%">
+            <option value="هجوم">⚽ هجوم منظم</option>
+            <option value="هجمة مضادة">⚡ هجمة مضادة سريعة</option>
+            <option value="تسديدة">🎯 تسديدة على المرمى</option>
+            <option value="هدف">🔥 هدف</option>
+            <option value="دفاع">🛡️ موقف دفاعي</option>
+            <option value="ضغط">🔴 ضغط عالي واسترجاع</option>
+            <option value="تسلل">📐 حالة تسلل (VAR)</option>
+            <option value="كرات ثابتة">🚩 ركلة حرة / ركنية</option>
+            <option value="أخطاء">⚠️ خطأ تكتيكي</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-top:12px;">
+          <label>ملاحظة فنية للمدرب أو اللاعبين:</label>
+          <textarea id="newClipNoteInput" class="tag-input" rows="3" placeholder="اكتب توجيهاتك الفنية حول هذه اللقطة (مثال: تأخر في التغطية العكسية، كان يجب التمرير مبكراً)" style="width:100%; resize:vertical;"></textarea>
+        </div>
+        <div class="form-group" style="margin-top:12px;">
+          <label>نطاق التوقيت المحدد:</label>
+          <div style="background:var(--bg-3); padding:8px 12px; border-radius:6px; font-family:monospace; font-size:0.9rem; color:var(--accent);" id="newClipTimeRangePreview">
+            0:00.0 ➔ 0:10.0 (المدة: 10.0 ثانية)
+          </div>
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--primary" id="confirmSaveClipBtn">💾 حفظ اللقطة في القائمة</button>
+        <button class="btn btn--ghost" id="cancelSaveClipBtn">إلغاء</button>
       </div>
     </div>
   </div>

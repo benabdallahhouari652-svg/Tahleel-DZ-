@@ -16,7 +16,24 @@ const VideoState = {
   currentPath: null,
   isMouseDown: false,
   startX: 0, startY: 0,
-  undoStack: []
+  undoStack: [],
+  redoStack: [],
+  currentText: ''
+};
+
+const TrimmerState = {
+  inTime: 0,
+  outTime: 10,
+  isLooping: false,
+  presentationMode: false,
+  currentPresIndex: 0,
+  presTimer: null,
+  clips: JSON.parse(localStorage.getItem('tahleel-clips') || 'null') || [
+    { id: 'c1', title: 'هجمة مضادة سريعة ومنظمة', start: 0, end: 12, tag: 'هجوم', note: 'تحول هجومي سريع واستغلال الفراغات بين الخطوط', rating: 5 },
+    { id: 'c2', title: 'تغطية دفاعية وضغط عالي', start: 15, end: 27, tag: 'دفاع', note: 'تضييق المساحات على حامل الكرة ومنع التمرير البيني', rating: 4 },
+    { id: 'c3', title: 'تسديدة مباشرة على المرمى', start: 32, end: 42, tag: 'تسديدة', note: 'متابعة الكرة المرتدة والتسديد المباشر في الزاوية البعيدة', rating: 5 },
+    { id: 'c4', title: 'تحليل حالة التسلل (VAR)', start: 45, end: 58, tag: 'تسلل', note: 'وضعية المدافع الأخير وتوقيت انطلاق المهاجم', rating: 4 }
+  ]
 };
 
 // ── Init ──────────────────────────────────────────────────
@@ -27,6 +44,9 @@ document.addEventListener('DOMContentLoaded', () => {
   initTimelineInteraction();
   initClipList();
   initClipExportEngine();
+  initTrimmerEngine();
+  initPresentationEngine();
+  renderClipList();
 });
 
 // ── Video Loading ─────────────────────────────────────────
@@ -60,7 +80,10 @@ function initVideoLoader() {
       if (durEl) durEl.textContent = formatTime(video.duration);
       buildTimelineRuler(video.duration);
       resizeCanvas(canvas, video);
-      showToast('⚡ تم تشغيل الفيديو التجريبي بنجاح! يمكنك الآن تجربة الرسم والتنقل', 'success');
+      TrimmerState.inTime = 0;
+      TrimmerState.outTime = Math.min(video.duration, 12);
+      updateTrimmerUI();
+      showToast('⚡ تم تشغيل الفيديو التجريبي بنجاح! يمكنك الآن تجربة الرسم والتقطيع', 'success');
     }, { once: true });
   });
 
@@ -95,6 +118,9 @@ function loadVideoFile(file, video, placeholder, overlayControls, canvas) {
     document.getElementById('tlDuration').textContent = formatTime(video.duration);
     buildTimelineRuler(video.duration);
     resizeCanvas(canvas, video);
+    TrimmerState.inTime = 0;
+    TrimmerState.outTime = Math.min(video.duration, 12);
+    updateTrimmerUI();
     showToast(`تم تحميل: ${file.name}`, 'success');
   });
 
@@ -102,7 +128,24 @@ function loadVideoFile(file, video, placeholder, overlayControls, canvas) {
     const pct = (video.currentTime / video.duration) * 100;
     const playhead = document.getElementById('tlPlayhead');
     if (playhead) playhead.style.right = `${pct}%`;
-    document.getElementById('tlCurrentTime').textContent = formatTime(video.currentTime);
+    document.getElementById('tlCurrentTime').textContent = formatPreciseTime(video.currentTime);
+
+    // Trimmer Loop range check
+    if (TrimmerState.isLooping && video.currentTime >= TrimmerState.outTime) {
+      video.currentTime = TrimmerState.inTime;
+      video.play();
+    }
+
+    // Presentation Mode check
+    if (TrimmerState.presentationMode) {
+      handlePresentationStep(video.currentTime);
+    }
+
+    // Live redraw if magnifier exists in undoStack to keep magnified feed live
+    if (VideoState.undoStack.some(s => s.tool === 'magnifier')) {
+      const cv = document.getElementById('drawCanvas');
+      if (cv) redrawCanvas(cv.getContext('2d'), cv);
+    }
   });
 }
 
@@ -162,23 +205,465 @@ function initTimelineInteraction() {
   document.getElementById('tlZoomOut')?.addEventListener('click', () => showToast('تصغير الجدول الزمني', 'info'));
 }
 
-// ── Clip List ─────────────────────────────────────────────
+// ── Precise Time Formatter ────────────────────────────────
+function formatPreciseTime(sec) {
+  if (isNaN(sec) || sec < 0) sec = 0;
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  const ms = Math.floor((sec % 1) * 10);
+  return `${m}:${s.toString().padStart(2, '0')}.${ms}`;
+}
+
+// ── Enhanced Clip Management & Playlist ───────────────────
 function initClipList() {
-  document.querySelectorAll('.clip-item').forEach(item => {
-    item.addEventListener('click', () => {
-      document.querySelectorAll('.clip-item').forEach(c => c.classList.remove('active'));
-      item.classList.add('active');
-      const video = document.getElementById('mainVideo');
-      if (video && !video.paused) {
-        const time = parseFloat(item.dataset.time || 0);
-        video.currentTime = time;
-      }
-    });
+  const searchInput = document.getElementById('searchClipsInput');
+  searchInput?.addEventListener('input', e => {
+    renderClipList(e.target.value.trim());
   });
 
   document.getElementById('addClipBtn')?.addEventListener('click', () => {
-    document.getElementById('videoFileInput')?.click();
+    openSaveClipModal();
   });
+}
+
+function renderClipList(filterText = '') {
+  const container = document.getElementById('clipList');
+  if (!container) return;
+
+  let clips = TrimmerState.clips;
+  if (filterText) {
+    const q = filterText.toLowerCase();
+    clips = clips.filter(c => c.title.toLowerCase().includes(q) || (c.tag && c.tag.toLowerCase().includes(q)) || (c.note && c.note.toLowerCase().includes(q)));
+  }
+
+  if (clips.length === 0) {
+    container.innerHTML = `
+      <div style="text-align:center; padding:24px 12px; color:var(--text-muted); font-size:0.82rem;">
+        ${filterText ? 'لا توجد لقطات مطابقة للبحث' : '📭 لا توجد لقطات في القائمة بعد.<br>حدد نطاق اللقطة ثم اضغط "✂️ حفظ اللقطة"'}
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = clips.map((c, idx) => {
+    const dur = (c.end - c.start).toFixed(1);
+    const tagColor = c.tag === 'هدف' ? '#10b981' : (c.tag === 'دفاع' ? '#ef4444' : (c.tag === 'تسلل' ? '#f59e0b' : '#00d4ff'));
+    return `
+      <div class="clip-item ${idx === 0 ? 'active' : ''}" data-id="${c.id}" data-start="${c.start}" data-end="${c.end}">
+        <div class="clip-thumb" title="تشغيل اللقطة">
+          <span>▶</span>
+        </div>
+        <div class="clip-meta">
+          <strong>${escapeHtml(c.title)}</strong>
+          <span>${formatPreciseTime(c.start)} ➔ ${formatPreciseTime(c.end)} (${dur}ث)</span>
+          <div style="display:flex; align-items:center; gap:6px; margin-top:2px;">
+            <span style="font-size:0.68rem; background:${tagColor}22; color:${tagColor}; border:1px solid ${tagColor}44; border-radius:3px; padding:1px 5px;">${c.tag || 'لقطة'}</span>
+            ${c.note ? `<span style="font-size:0.68rem; color:var(--text-muted); text-overflow:ellipsis; overflow:hidden; white-space:nowrap; max-width:110px;" title="${escapeHtml(c.note)}">📝 ${escapeHtml(c.note)}</span>` : ''}
+          </div>
+        </div>
+        <div class="clip-actions">
+          <button class="clip-act-btn clip-act-btn--dl" title="تصدير وتنزيل اللقطة مباشرة MP4" onclick="event.stopPropagation(); exportTrimmedSegment(${c.start}, ${c.end}, '${escapeJsString(c.title)}')">💾</button>
+          <button class="clip-act-btn clip-act-btn--del" title="حذف اللقطة" onclick="event.stopPropagation(); deleteClipItem('${c.id}')">🗑️</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // Click on clip item to play range
+  container.querySelectorAll('.clip-item').forEach(item => {
+    item.addEventListener('click', () => {
+      container.querySelectorAll('.clip-item').forEach(el => el.classList.remove('active'));
+      item.classList.add('active');
+      const start = parseFloat(item.dataset.start || 0);
+      const end = parseFloat(item.dataset.end || 10);
+      playClipRange(start, end);
+    });
+  });
+}
+
+function playClipRange(start, end) {
+  const video = document.getElementById('mainVideo');
+  if (!video) return;
+  TrimmerState.inTime = start;
+  TrimmerState.outTime = end;
+  updateTrimmerUI();
+  video.currentTime = start;
+  video.play();
+  showToast(`تشغيل اللقطة: ${formatPreciseTime(start)} ➔ ${formatPreciseTime(end)}`, 'info');
+}
+
+function deleteClipItem(id) {
+  TrimmerState.clips = TrimmerState.clips.filter(c => c.id !== id);
+  localStorage.setItem('tahleel-clips', JSON.stringify(TrimmerState.clips));
+  renderClipList();
+  showToast('تم حذف اللقطة من القائمة', 'info');
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function escapeJsString(str) {
+  if (!str) return 'clip';
+  return str.replace(/'/g, "\\'").replace(/"/g, '\\"');
+}
+
+// ── Video Trimmer & Jog-Shuttle Engine ────────────────────
+function initTrimmerEngine() {
+  const markInBtn = document.getElementById('markInBtn');
+  const markOutBtn = document.getElementById('markOutBtn');
+  const quick10sBtn = document.getElementById('quick10sClipBtn');
+  const stepBackBtn = document.getElementById('stepBackFrameBtn');
+  const stepFwdBtn = document.getElementById('stepFwdFrameBtn');
+  const jumpBackBtn = document.getElementById('jumpBack5sBtn');
+  const jumpFwdBtn = document.getElementById('jumpFwd5sBtn');
+  const playPauseBtn = document.getElementById('trimmerPlayPauseBtn');
+  const loopRangeBtn = document.getElementById('loopRangeBtn');
+  const saveClipBtn = document.getElementById('saveTrimmedClipBtn');
+  const exportClipBtn = document.getElementById('exportTrimmedClipBtn');
+  const video = document.getElementById('mainVideo');
+
+  markInBtn?.addEventListener('click', () => {
+    if (!video) return;
+    setInPoint(video.currentTime);
+  });
+
+  markOutBtn?.addEventListener('click', () => {
+    if (!video) return;
+    setOutPoint(video.currentTime);
+  });
+
+  quick10sBtn?.addEventListener('click', () => {
+    if (!video) return;
+    const cur = video.currentTime || 0;
+    const dur = VideoState.duration || 100;
+    TrimmerState.inTime = Math.max(0, cur - 5);
+    TrimmerState.outTime = Math.min(dur, cur + 5);
+    updateTrimmerUI();
+    showToast('⚡ تم تحديد لقطة 10 ثوانٍ حول المشهد الحالي', 'success');
+  });
+
+  stepBackBtn?.addEventListener('click', () => stepFrame(-1));
+  stepFwdBtn?.addEventListener('click', () => stepFrame(1));
+  jumpBackBtn?.addEventListener('click', () => jumpSeconds(-5));
+  jumpFwdBtn?.addEventListener('click', () => jumpSeconds(5));
+
+  playPauseBtn?.addEventListener('click', () => {
+    if (!video) return;
+    if (video.paused) {
+      video.play();
+      playPauseBtn.textContent = '⏸';
+    } else {
+      video.pause();
+      playPauseBtn.textContent = '▶';
+    }
+  });
+
+  video?.addEventListener('play', () => { if (playPauseBtn) playPauseBtn.textContent = '⏸'; });
+  video?.addEventListener('pause', () => { if (playPauseBtn) playPauseBtn.textContent = '▶'; });
+
+  loopRangeBtn?.addEventListener('click', () => {
+    TrimmerState.isLooping = !TrimmerState.isLooping;
+    loopRangeBtn.classList.toggle('active', TrimmerState.isLooping);
+    if (TrimmerState.isLooping) {
+      if (video) {
+        video.currentTime = TrimmerState.inTime;
+        video.play();
+      }
+      showToast('🔁 تم تفعيل تكرار اللقطة المحددة باستمرار', 'info');
+    } else {
+      showToast('تم إيقاف تكرار اللقطة', 'info');
+    }
+  });
+
+  saveClipBtn?.addEventListener('click', openSaveClipModal);
+  exportClipBtn?.addEventListener('click', () => {
+    exportTrimmedSegment(TrimmerState.inTime, TrimmerState.outTime, 'Tactical_Clip');
+  });
+
+  initSaveClipModal();
+  initTimelineRangeDrag();
+  initTrimmerShortcuts();
+}
+
+function setInPoint(time) {
+  TrimmerState.inTime = Math.max(0, Math.min(time, TrimmerState.outTime - 0.2));
+  updateTrimmerUI();
+  showToast(`[In] بداية اللقطة: ${formatPreciseTime(TrimmerState.inTime)}`, 'info');
+}
+
+function setOutPoint(time) {
+  const maxDur = VideoState.duration || 9999;
+  TrimmerState.outTime = Math.min(maxDur, Math.max(time, TrimmerState.inTime + 0.2));
+  updateTrimmerUI();
+  showToast(`]Out[ نهاية اللقطة: ${formatPreciseTime(TrimmerState.outTime)}`, 'info');
+}
+
+function stepFrame(deltaFrames) {
+  const video = document.getElementById('mainVideo');
+  if (!video) return;
+  const frameDur = 0.04; // 25 fps
+  video.currentTime = Math.max(0, Math.min(video.duration || 9999, video.currentTime + deltaFrames * frameDur));
+}
+
+function jumpSeconds(deltaSec) {
+  const video = document.getElementById('mainVideo');
+  if (!video) return;
+  video.currentTime = Math.max(0, Math.min(video.duration || 9999, video.currentTime + deltaSec));
+}
+
+function updateTrimmerUI() {
+  const valEl = document.getElementById('vtbRangeVal');
+  const durEl = document.getElementById('vtbRangeDur');
+  const highlight = document.getElementById('tlRangeHighlight');
+  const rangeLabel = document.getElementById('tlRangeLabel');
+  const dur = Math.max(0, TrimmerState.outTime - TrimmerState.inTime).toFixed(1);
+
+  if (valEl) valEl.textContent = `${formatPreciseTime(TrimmerState.inTime)} ➔ ${formatPreciseTime(TrimmerState.outTime)}`;
+  if (durEl) durEl.textContent = `(${dur} ث)`;
+
+  if (highlight && VideoState.duration > 0) {
+    const startPct = (TrimmerState.inTime / VideoState.duration) * 100;
+    const endPct = (TrimmerState.outTime / VideoState.duration) * 100;
+    const widthPct = Math.max(0.5, endPct - startPct);
+
+    // RTL layout: right is start
+    highlight.style.display = 'flex';
+    highlight.style.right = `${startPct}%`;
+    highlight.style.width = `${widthPct}%`;
+    if (rangeLabel) rangeLabel.textContent = `${formatPreciseTime(TrimmerState.inTime)} - ${formatPreciseTime(TrimmerState.outTime)}`;
+  }
+}
+
+function initTimelineRangeDrag() {
+  const handleIn = document.getElementById('tlRangeHandleIn');
+  const handleOut = document.getElementById('tlRangeHandleOut');
+  const trackArea = document.getElementById('tlTrackArea');
+  if (!trackArea) return;
+
+  let draggingHandle = null;
+
+  handleIn?.addEventListener('mousedown', e => {
+    e.stopPropagation();
+    draggingHandle = 'in';
+  });
+
+  handleOut?.addEventListener('mousedown', e => {
+    e.stopPropagation();
+    draggingHandle = 'out';
+  });
+
+  window.addEventListener('mousemove', e => {
+    if (!draggingHandle || !VideoState.duration) return;
+    const rect = trackArea.getBoundingClientRect();
+    const x = rect.right - e.clientX;
+    const pct = Math.max(0, Math.min(1, x / rect.width));
+    const t = pct * VideoState.duration;
+
+    if (draggingHandle === 'in') {
+      TrimmerState.inTime = Math.min(t, TrimmerState.outTime - 0.2);
+    } else if (draggingHandle === 'out') {
+      TrimmerState.outTime = Math.max(t, TrimmerState.inTime + 0.2);
+    }
+    updateTrimmerUI();
+  });
+
+  window.addEventListener('mouseup', () => {
+    draggingHandle = null;
+  });
+}
+
+function initTrimmerShortcuts() {
+  window.addEventListener('keydown', e => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (!document.getElementById('view-analyzer')?.classList.contains('active')) return;
+
+    if (e.key === 'i' || e.key === 'I') {
+      const v = document.getElementById('mainVideo');
+      if (v) setInPoint(v.currentTime);
+    } else if (e.key === 'o' || e.key === 'O') {
+      const v = document.getElementById('mainVideo');
+      if (v) setOutPoint(v.currentTime);
+    } else if (e.key === ',' || e.key === '<') {
+      stepFrame(-1);
+    } else if (e.key === '.' || e.key === '>') {
+      stepFrame(1);
+    } else if (e.key === 'l' || e.key === 'L') {
+      document.getElementById('loopRangeBtn')?.click();
+    }
+  });
+}
+
+// ── Save Clip Modal ───────────────────────────────────────
+function initSaveClipModal() {
+  const modal = document.getElementById('saveClipModal');
+  const closeBtn = document.getElementById('closeSaveClipModal');
+  const cancelBtn = document.getElementById('cancelSaveClipBtn');
+  const confirmBtn = document.getElementById('confirmSaveClipBtn');
+
+  [closeBtn, cancelBtn].forEach(b => {
+    b?.addEventListener('click', () => {
+      if (modal) modal.style.display = 'none';
+    });
+  });
+
+  confirmBtn?.addEventListener('click', () => {
+    const titleInput = document.getElementById('newClipTitleInput');
+    const catSelect = document.getElementById('newClipCategorySelect');
+    const noteInput = document.getElementById('newClipNoteInput');
+
+    const title = titleInput?.value.trim() || `لقطة تكتيكية #${TrimmerState.clips.length + 1}`;
+    const tag = catSelect?.value || 'هجوم';
+    const note = noteInput?.value.trim() || '';
+
+    const newClip = {
+      id: 'c_' + Date.now(),
+      title,
+      start: parseFloat(TrimmerState.inTime.toFixed(2)),
+      end: parseFloat(TrimmerState.outTime.toFixed(2)),
+      tag,
+      note,
+      rating: 5
+    };
+
+    TrimmerState.clips.unshift(newClip);
+    localStorage.setItem('tahleel-clips', JSON.stringify(TrimmerState.clips));
+
+    if (titleInput) titleInput.value = '';
+    if (noteInput) noteInput.value = '';
+    if (modal) modal.style.display = 'none';
+
+    renderClipList();
+    showToast('✂️ تم حفظ اللقطة المقصوصة بنجاح في قائمة المقاطع!', 'success');
+  });
+}
+
+function openSaveClipModal() {
+  const modal = document.getElementById('saveClipModal');
+  const preview = document.getElementById('newClipTimeRangePreview');
+  const dur = (TrimmerState.outTime - TrimmerState.inTime).toFixed(1);
+
+  if (preview) {
+    preview.textContent = `${formatPreciseTime(TrimmerState.inTime)} ➔ ${formatPreciseTime(TrimmerState.outTime)} (المدة: ${dur} ثانية)`;
+  }
+  if (modal) modal.style.display = 'flex';
+}
+
+// ── Coach Presentation Mode Engine ───────────────────────
+function initPresentationEngine() {
+  const presBtn = document.getElementById('presentationModeBtn');
+  const prevBtn = document.getElementById('presPrevBtn');
+  const nextBtn = document.getElementById('presNextBtn');
+  const playPauseBtn = document.getElementById('presPlayPauseBtn');
+  const exitBtn = document.getElementById('presExitBtn');
+  const video = document.getElementById('mainVideo');
+
+  presBtn?.addEventListener('click', () => {
+    if (TrimmerState.clips.length === 0) {
+      showToast('لا توجد لقطات في القائمة لعرضها في المحاضرة', 'info');
+      return;
+    }
+    startPresentationMode();
+  });
+
+  exitBtn?.addEventListener('click', stopPresentationMode);
+
+  prevBtn?.addEventListener('click', () => {
+    if (TrimmerState.currentPresIndex > 0) {
+      playPresentationClip(TrimmerState.currentPresIndex - 1);
+    }
+  });
+
+  nextBtn?.addEventListener('click', () => {
+    if (TrimmerState.currentPresIndex < TrimmerState.clips.length - 1) {
+      playPresentationClip(TrimmerState.currentPresIndex + 1);
+    } else {
+      showToast('🎉 انتهى عرض جميع اللقطات في المحاضرة الفنية!', 'success');
+      stopPresentationMode();
+    }
+  });
+
+  playPauseBtn?.addEventListener('click', () => {
+    if (!video) return;
+    if (video.paused) {
+      video.play();
+      playPauseBtn.textContent = '⏸ إيقاف للشرح';
+    } else {
+      video.pause();
+      playPauseBtn.textContent = '▶ مواصلة الشرح';
+    }
+  });
+}
+
+function startPresentationMode() {
+  TrimmerState.presentationMode = true;
+  const overlay = document.getElementById('presentationOverlay');
+  if (overlay) overlay.style.display = 'flex';
+  playPresentationClip(0);
+  showToast('🎬 بدأ وضع المحاضرة الفنية للمدرب — عرض اللقطات بالتسلسل', 'success');
+}
+
+function stopPresentationMode() {
+  TrimmerState.presentationMode = false;
+  const overlay = document.getElementById('presentationOverlay');
+  if (overlay) overlay.style.display = 'none';
+  if (TrimmerState.presTimer) clearTimeout(TrimmerState.presTimer);
+}
+
+function playPresentationClip(index) {
+  TrimmerState.currentPresIndex = index;
+  const clip = TrimmerState.clips[index];
+  if (!clip) return;
+
+  const titleEl = document.getElementById('presClipTitle');
+  const progEl = document.getElementById('presClipProgress');
+  const video = document.getElementById('mainVideo');
+
+  if (titleEl) titleEl.textContent = `${clip.title} ${clip.note ? '— ' + clip.note : ''}`;
+  if (progEl) progEl.textContent = `لقطة ${index + 1} من ${TrimmerState.clips.length} (${clip.tag || 'تحليل'})`;
+
+  if (video) {
+    TrimmerState.inTime = clip.start;
+    TrimmerState.outTime = clip.end;
+    updateTrimmerUI();
+    video.currentTime = clip.start;
+    video.play();
+  }
+}
+
+function handlePresentationStep(currentTime) {
+  const clip = TrimmerState.clips[TrimmerState.currentPresIndex];
+  if (!clip) return;
+
+  if (currentTime >= clip.end) {
+    const video = document.getElementById('mainVideo');
+    if (video) video.pause();
+
+    // Pause briefly for explanation then advance
+    if (TrimmerState.presTimer) clearTimeout(TrimmerState.presTimer);
+    TrimmerState.presTimer = setTimeout(() => {
+      if (!TrimmerState.presentationMode) return;
+      if (TrimmerState.currentPresIndex < TrimmerState.clips.length - 1) {
+        playPresentationClip(TrimmerState.currentPresIndex + 1);
+      } else {
+        showToast('🎉 انتهى عرض جميع لقطات المحاضرة التكتيكية بنجاح!', 'success');
+        stopPresentationMode();
+      }
+    }, 2500);
+  }
+}
+
+// ── Export Trimmed Segment Direct Function ────────────────
+function exportTrimmedSegment(inTime, outTime, title) {
+  const video = document.getElementById('mainVideo');
+  if (!video || !video.src || video.style.display === 'none') {
+    showToast('يرجى تشغيل فيديو أولاً (أو اضغط "⚡ تشغيل فيديو تجريبي")', 'info');
+    return;
+  }
+  const dur = Math.max(1, Math.round(outTime - inTime));
+  video.currentTime = inTime;
+  startVideoClipExport(dur, title || 'Tactical_Clip', true);
 }
 
 // ── Advanced Drawing & Telestration Engine ────────────────
@@ -322,6 +807,9 @@ function onDrawStart(e, canvas, ctx) {
 
   if (VideoState.currentTool === 'freehand' || VideoState.currentTool === 'laser') {
     VideoState.currentPath = [{ x, y }];
+  } else if (VideoState.currentTool === 'player-badge') {
+    const text = prompt('أدخل رقم واسم وتوجيه اللاعب (مثال: #10 محرز — ضغط عالي):', '#10 لاعب تكتيكي');
+    VideoState.currentText = text && text.trim() ? text.trim() : '#10 لاعب تكتيكي';
   } else if (VideoState.currentTool === 'text') {
     const text = prompt('أدخل نص التوجيه / اسم اللاعب:', 'تغطية تكتيكية');
     if (text && text.trim()) {
@@ -462,6 +950,256 @@ function drawShape(ctx, tool, x1, y1, x2, y2, color, lineWidth, text, path, canv
       ctx.strokeStyle = color;
       ctx.lineWidth = Math.max(3, lineWidth);
       ctx.beginPath(); ctx.arc(x1, y1, r, 0, Math.PI * 2); ctx.stroke();
+      break;
+    }
+
+    case 'magnifier': {
+      // High-precision VAR Magnifier / Zoom Loupe
+      const r = Math.max(38, Math.hypot(x2 - x1, y2 - y1));
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(x1, y1, r, 0, Math.PI * 2);
+      ctx.clip();
+
+      // Draw magnified video frame directly from underlying video
+      try {
+        const vid = document.getElementById('mainVideo');
+        if (vid && vid.videoWidth && canvas) {
+          const sx = (x1 / canvas.width) * vid.videoWidth;
+          const sy = (y1 / canvas.height) * vid.videoHeight;
+          const zoom = 2.4;
+          const sw = (r * 2 / zoom) * (vid.videoWidth / canvas.width);
+          const sh = (r * 2 / zoom) * (vid.videoHeight / canvas.height);
+          ctx.drawImage(vid, sx - sw/2, sy - sh/2, sw, sh, x1 - r, y1 - r, r * 2, r * 2);
+        } else {
+          ctx.fillStyle = 'rgba(0, 212, 255, 0.15)';
+          ctx.fillRect(x1 - r, y1 - r, r * 2, r * 2);
+        }
+      } catch (_) {
+        ctx.fillStyle = 'rgba(0, 212, 255, 0.15)';
+        ctx.fillRect(x1 - r, y1 - r, r * 2, r * 2);
+      }
+
+      // Tactical crosshair inside loupe
+      ctx.strokeStyle = hexToRgba(color, 0.45);
+      ctx.lineWidth = 1.2;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(x1 - r, y1); ctx.lineTo(x1 + r, y1);
+      ctx.moveTo(x1, y1 - r); ctx.lineTo(x1, y1 + r);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.restore();
+
+      // Glowing lens bezel
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 16;
+      ctx.strokeStyle = color;
+      ctx.lineWidth = Math.max(3, lineWidth);
+      ctx.beginPath();
+      ctx.arc(x1, y1, r, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Lens Badge: VAR ZOOM 2.5x
+      ctx.shadowBlur = 0;
+      const bText = '🔍 VAR 2.5x';
+      ctx.font = 'bold 11px Cairo, sans-serif';
+      const bw = ctx.measureText(bText).width + 14;
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.roundRect(x1 - bw/2, y1 + r - 9, bw, 20, 5);
+      ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(bText, x1, y1 + r + 2);
+      break;
+    }
+
+    case 'offside-line': {
+      // 3D Perspective Offside Line & Virtual Wall
+      const wallHeight = 65;
+      const grad = ctx.createLinearGradient(0, y1 - wallHeight, 0, y1);
+      grad.addColorStop(0, 'rgba(239, 68, 68, 0)');
+      grad.addColorStop(1, hexToRgba(color, 0.4));
+
+      // Draw vertical wall
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.lineTo(x2, y2 - wallHeight);
+      ctx.lineTo(x1, y1 - wallHeight);
+      ctx.closePath();
+      ctx.fill();
+
+      // Ground reference line with luminous glow
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 12;
+      ctx.strokeStyle = color;
+      ctx.lineWidth = Math.max(3, lineWidth);
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+
+      // Top wall guide line
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = hexToRgba(color, 0.6);
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(x1, y1 - wallHeight);
+      ctx.lineTo(x2, y2 - wallHeight);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Tactical Offside Marker
+      const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+      const lbl = '📐 خط التسلل والعمق التكتيكي';
+      ctx.font = 'bold 11px Cairo, sans-serif';
+      const lw = ctx.measureText(lbl).width + 14;
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.92)';
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.roundRect(mx - lw/2, my - 24, lw, 22, 5);
+      ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(lbl, mx, my - 13);
+      break;
+    }
+
+    case 'space-polygon': {
+      // Tactical Free Space / Pocket of Space
+      const rx = Math.min(x1, x2), ry = Math.min(y1, y2);
+      const rw = Math.abs(x2 - x1), rh = Math.abs(y2 - y1);
+      ctx.fillStyle = hexToRgba(color, 0.28);
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 14;
+      ctx.strokeStyle = color;
+      ctx.lineWidth = Math.max(2.5, lineWidth);
+      ctx.beginPath();
+      ctx.roundRect(rx, ry, rw, rh, 8);
+      ctx.fill(); ctx.stroke();
+
+      // Free Space Badge
+      ctx.shadowBlur = 0;
+      const sLbl = '🔷 مساحة شاغرة (Free Space)';
+      ctx.font = 'bold 11px Cairo, sans-serif';
+      const slw = ctx.measureText(sLbl).width + 12;
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.roundRect(rx + rw/2 - slw/2, ry + rh/2 - 11, slw, 22, 4);
+      ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(sLbl, rx + rw/2, ry + rh/2);
+      break;
+    }
+
+    case 'aerial-pass': {
+      // Parabolic Arc for Aerial / Lofted Pass with Ground Shadow
+      const mx = (x1 + x2) / 2;
+      const dist = Math.hypot(x2 - x1, y2 - y1);
+      const arcHeight = Math.min(130, Math.max(45, dist * 0.42));
+      const cy = Math.min(y1, y2) - arcHeight;
+
+      // Ground shadow along pitch
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.4)';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([5, 4]);
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Flight trajectory arc
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 10;
+      ctx.strokeStyle = color;
+      ctx.lineWidth = Math.max(3, lineWidth);
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.quadraticCurveTo(mx, cy, x2, y2);
+      ctx.stroke();
+
+      // Target landing ring
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(x2, y2, 9, 0, Math.PI * 2); ctx.stroke();
+      ctx.beginPath(); ctx.arc(x2, y2, 4, 0, Math.PI * 2); ctx.fill();
+
+      // Landing arrow
+      const angle = Math.atan2(y2 - cy, x2 - mx);
+      drawHead(ctx, x2, y2, angle, Math.max(14, lineWidth * 3.5));
+      break;
+    }
+
+    case 'player-badge': {
+      // 3D perspective ring at feet
+      const rx = Math.max(18, Math.abs(x2 - x1) * 0.4);
+      const ry = rx * 0.45;
+      ctx.beginPath();
+      ctx.ellipse(x1, y1, rx, ry, 0, 0, Math.PI * 2);
+      ctx.fillStyle = hexToRgba(color, 0.28);
+      ctx.fill();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Stem pole
+      const poleHeight = 65;
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x1, y1 - poleHeight);
+      ctx.stroke();
+
+      // Player badge
+      const pLabel = text || 'لاعب تكتيكي';
+      const numMatch = pLabel.match(/#\d+/);
+      const pNum = numMatch ? numMatch[0] : '#10';
+      const pName = pLabel.replace(pNum, '').trim() || 'لاعب تكتيكي';
+
+      ctx.font = 'bold 12px Cairo, sans-serif';
+      const ptw = ctx.measureText(pName).width + 42;
+      const bx = x1 - ptw / 2;
+      const by = y1 - poleHeight - 26;
+
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.5;
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.roundRect(bx, by, ptw, 26, 6);
+      ctx.fill(); ctx.stroke();
+
+      // Number box
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.roundRect(bx + 4, by + 4, 24, 18, 4);
+      ctx.fill();
+      ctx.fillStyle = '#0f172a';
+      ctx.font = 'bold 11px monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(pNum.replace('#', ''), bx + 16, by + 13);
+
+      // Name
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 12px Cairo, sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText(pName, bx + ptw - 8, by + 13);
       break;
     }
 
