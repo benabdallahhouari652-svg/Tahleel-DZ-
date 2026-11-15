@@ -1856,6 +1856,373 @@ body {
 }
 
 /* =====================================================
+   SQUAD & TEAMS MANAGER STUDIO
+   ===================================================== */
+.squad-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 1300px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.squad-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.squad-header h2 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Dual Clubs Card (Home & Away) */
+.clubs-dual-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.club-card {
+  background: var(--bg-card);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  transition: all .2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.club-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 4px 20px rgba(0, 212, 255, .1);
+}
+
+.club-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 3px;
+  background: var(--team-color, var(--accent));
+}
+
+.club-logo-box {
+  width: 76px;
+  height: 76px;
+  border-radius: 12px;
+  background: #0f172a;
+  border: 2px dashed rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+  overflow: hidden;
+  transition: all .2s;
+}
+
+.club-logo-box:hover {
+  border-color: var(--accent);
+}
+
+.club-logo-box input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+
+.club-info-fields {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.club-info-fields .tag-input {
+  width: 100%;
+  padding: 6px 10px;
+  font-size: .88rem;
+  font-weight: 700;
+}
+
+.club-sub-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vs-badge-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 8px;
+}
+
+.vs-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00D4FF, #0088cc);
+  color: #0b1322;
+  font-weight: 900;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 15px rgba(0, 212, 255, .4);
+}
+
+.vs-pill {
+  font-size: .7rem;
+  font-weight: 700;
+  background: var(--bg-3);
+  color: var(--text-muted);
+  border: 1px solid var(--card-border);
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+/* Roster Filter & Controls Bar */
+.roster-controls-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: var(--bg-card);
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--card-border);
+}
+
+.roster-filter-tabs {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.roster-tab-btn {
+  padding: 5px 11px;
+  background: var(--bg-3);
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  color: var(--text-muted);
+  font-size: .78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .15s;
+}
+
+.roster-tab-btn:hover, .roster-tab-btn.active {
+  background: rgba(0, 212, 255, .15);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* Squad Grid & Cards */
+.squad-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.player-card {
+  background: var(--bg-card);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  transition: all .2s ease;
+  overflow: hidden;
+}
+
+.player-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, .3), 0 0 15px rgba(0, 212, 255, .15);
+}
+
+.player-card__num {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: .8rem;
+  font-family: monospace;
+}
+
+.player-card__status {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: .68rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.player-card__status.starter {
+  background: rgba(16, 185, 129, .15);
+  color: #10B981;
+  border: 1px solid rgba(16, 185, 129, .3);
+}
+
+.player-card__status.bench {
+  background: rgba(148, 163, 184, .15);
+  color: #94A3B8;
+  border: 1px solid rgba(148, 163, 184, .25);
+}
+
+.player-card__avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  margin: 12px 0 10px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0f172a;
+}
+
+.player-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.player-avatar-fallback {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 1.1rem;
+}
+
+.player-card__info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  width: 100%;
+}
+
+.player-name {
+  font-size: .95rem;
+  font-weight: 800;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.player-pos-badge {
+  font-size: .72rem;
+  font-weight: 700;
+  padding: 1px 8px;
+  border-radius: 4px;
+}
+
+.player-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 8px;
+  width: 100%;
+}
+
+.meta-pill {
+  font-size: .7rem;
+  color: var(--text-muted);
+  background: var(--bg-3);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--card-border);
+}
+
+.player-card__note {
+  font-size: .72rem;
+  color: var(--text-muted);
+  margin-top: 8px;
+  background: rgba(255, 255, 255, .03);
+  padding: 4px 8px;
+  border-radius: 4px;
+  width: 100%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.player-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  width: 100%;
+  border-top: 1px solid var(--card-border);
+  padding-top: 8px;
+}
+
+.btn-card-act {
+  flex: 1;
+  padding: 4px 8px;
+  font-size: .75rem;
+  font-weight: 700;
+  background: var(--bg-3);
+  border: 1px solid var(--card-border);
+  border-radius: 5px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all .15s;
+}
+
+.btn-card-act:hover {
+  background: rgba(0, 212, 255, .15);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.btn-card-act--del:hover {
+  background: rgba(239, 68, 68, .15);
+  color: #ef4444;
+  border-color: #ef4444;
+}
+
+/* =====================================================
    RESPONSIVE
    ===================================================== */
 @media (max-width: 1100px) {

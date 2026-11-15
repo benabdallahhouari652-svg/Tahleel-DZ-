@@ -105,6 +105,9 @@ function buildOfficialReportHtml(data) {
   const halfImg = captureCanvasImage('halfChart');
   const pitchImg = captureCanvasImage('pitchCanvas');
   const clips = window.TrimmerState?.clips || [];
+  const homeLogo = window.SquadState?.homeClub?.logo;
+  const awayLogo = window.SquadState?.awayClub?.logo;
+  const squadPlayers = window.SquadState?.players || [];
 
   return `
 <!DOCTYPE html>
@@ -448,7 +451,9 @@ function buildOfficialReportHtml(data) {
     <!-- Scoreboard Hero -->
     <div class="match-scoreboard">
       <div class="team-block">
-        <div class="team-badge">⚽</div>
+        <div class="team-badge" style="overflow:hidden; background:#0f172a;">
+          ${homeLogo ? `<img src="${homeLogo}" alt="Logo" style="width:100%; height:100%; object-fit:contain;">` : '⚽'}
+        </div>
         <div class="team-name">${escapeHtml(data.homeTeam)}</div>
       </div>
       <div class="score-block">
@@ -457,7 +462,9 @@ function buildOfficialReportHtml(data) {
         <div class="match-subtext">📍 ${escapeHtml(data.venue)}</div>
       </div>
       <div class="team-block">
-        <div class="team-badge">🛡️</div>
+        <div class="team-badge" style="overflow:hidden; background:#0f172a;">
+          ${awayLogo ? `<img src="${awayLogo}" alt="Logo" style="width:100%; height:100%; object-fit:contain;">` : '🛡️'}
+        </div>
         <div class="team-name">${escapeHtml(data.awayTeam)}</div>
       </div>
     </div>
@@ -549,6 +556,25 @@ function buildOfficialReportHtml(data) {
       <div class="rep-section-title">⚽ الرسم التكتيكي وتمركز اللاعبين والمعدات</div>
       <div class="tac-pitch-box">
         <img src="${pitchImg}" alt="اللوحة التكتيكية">
+      </div>
+    </div>
+    ` : ''}
+
+    <!-- Squad Lineup Section -->
+    ${squadPlayers.length > 0 ? `
+    <div class="rep-section">
+      <div class="rep-section-title">👥 قائمة لاعبي المباراة (${squadPlayers.filter(p => p.starter).length} أساسي · ${squadPlayers.filter(p => !p.starter).length} بديل)</div>
+      <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top:6px;">
+        ${squadPlayers.map(p => `
+          <div style="display:flex; align-items:center; gap:8px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:4px 8px; font-size:8pt;">
+            <span style="background:${p.starter ? '#10b981' : '#64748b'}; color:#fff; font-weight:800; font-size:7pt; padding:1px 5px; border-radius:3px;">#${p.num}</span>
+            <div style="flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+              <strong style="color:#0f172a;">${escapeHtml(p.name)}</strong>
+              <span style="color:#64748b; font-size:7pt; display:block;">${p.posName || p.pos} · ${p.foot || 'يمنى'}</span>
+            </div>
+            <span style="font-size:6.5pt; font-weight:700; color:${p.starter ? '#10b981' : '#94a3b8'};">${p.starter ? 'أساسي' : 'بديل'}</span>
+          </div>
+        `).join('')}
       </div>
     </div>
     ` : ''}
