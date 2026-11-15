@@ -201,8 +201,9 @@
         <aside class="analyzer-sidebar">
           <div class="sidebar-header">
             <h3>قائمة المقاطع</h3>
-            <div style="display:flex; gap:6px;">
+            <div style="display:flex; gap:4px; flex-wrap:wrap;">
               <button class="btn btn--sm btn--accent" id="presentationModeBtn" title="عرض المحاضرة الفنية لجميع المقاطع بالتسلسل">🎬 عرض الكل</button>
+              <button class="btn btn--sm btn--ghost" id="openPdfReportFromAnalyzerBtn" title="توليد تقرير المباراة الفني الشامل PDF">📄 تقرير PDF</button>
               <button class="btn btn--sm btn--primary" id="addClipBtn" title="إضافة مقطع جديد">+ قص</button>
             </div>
           </div>
@@ -1186,11 +1187,116 @@
     </div>
   </div>
 
+  <!-- Official Match Analysis PDF Report Generator Modal -->
+  <div class="modal-overlay" id="pdfReportModal" style="display:none">
+    <div class="modal" style="max-width: 640px; max-height:90vh; overflow-y:auto;">
+      <div class="modal__header">
+        <h3>📄 إنشاء وتصدير تقرير المباراة الفني الرسمي (PDF)</h3>
+        <button class="modal__close" id="closePdfReportModal">✕</button>
+      </div>
+      <div class="modal__body">
+        <p style="font-size:0.86rem; color:var(--text-muted); line-height:1.5;">
+          يولد النظام وثيقة فنية احترافية متعددة الصفحات مجهزة للطباعة أو الحفظ كـ <strong>PDF رسمي</strong> يتضمن بيانات المباراة، الإحصائيات، ومخطط اللوحة التكتيكية، وجدول اللقطات المقصوصة مع ملاحظات المدرب واعتماد الطاقم الفني.
+        </p>
+
+        <!-- Match Info Form Grid -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:8px;">
+          <div class="form-group">
+            <label>البطولة / المنافسة:</label>
+            <input type="text" id="rptCompetition" class="tag-input" value="نهائي كأس الجزائر — 2026">
+          </div>
+          <div class="form-group">
+            <label>تاريخ المباراة:</label>
+            <input type="date" id="rptMatchDate" class="tag-input">
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:2fr 1fr 2fr 1fr; gap:8px; margin-top:8px;">
+          <div class="form-group">
+            <label>الفريق المضيف:</label>
+            <input type="text" id="rptHomeTeam" class="tag-input" value="مولودية الجزائر">
+          </div>
+          <div class="form-group">
+            <label>الأهداف:</label>
+            <input type="text" id="rptHomeScore" class="tag-input" value="2" style="text-align:center;">
+          </div>
+          <div class="form-group">
+            <label>الفريق الضيف:</label>
+            <input type="text" id="rptAwayTeam" class="tag-input" value="شباب بلوزداد">
+          </div>
+          <div class="form-group">
+            <label>الأهداف:</label>
+            <input type="text" id="rptAwayScore" class="tag-input" value="1" style="text-align:center;">
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:8px;">
+          <div class="form-group">
+            <label>اسم المدير الفني (Head Coach):</label>
+            <input type="text" id="rptCoachName" class="tag-input" value="الكوتش: حسام الدين">
+          </div>
+          <div class="form-group">
+            <label>محلل الأداء (Performance Analyst):</label>
+            <input type="text" id="rptAnalystName" class="tag-input" value="المحلل: بن عبد الله هواري">
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top:8px;">
+          <label>مكان المباراة / الملعب:</label>
+          <input type="text" id="rptVenue" class="tag-input" value="ملعب 5 جويلية 1962 — الجزائر العاصمة">
+        </div>
+
+        <div class="form-group" style="margin-top:8px;">
+          <label>الملخص التكتيكي التنفيذي للمدرب:</label>
+          <textarea id="rptSummaryText" class="tag-input" rows="2" style="resize:vertical;">أظهر الفريق تنظيماً تكتيكياً فعالاً في التحول الهجومي السريع والضغط العالي في الثلث الهجومي. يجب مواصلة العمل على تضييق المساحات بين الخطوط وإحكام التغطية العكسية عند الكرات الثابتة.</textarea>
+        </div>
+
+        <!-- Sections Checkboxes -->
+        <div class="form-group" style="margin-top:12px; background:var(--bg-3); padding:10px 14px; border-radius:8px;">
+          <label style="color:var(--accent); font-weight:700; margin-bottom:6px;">عناصر التقرير المضمنة في الوثيقة:</label>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:0.84rem;">
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+              <input type="checkbox" id="rptIncCover" checked> صفحة غلاف ولوحة النتيجة
+            </label>
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+              <input type="checkbox" id="rptIncKpis" checked> مؤشرات الأداء الإحصائية (KPIs)
+            </label>
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+              <input type="checkbox" id="rptIncCharts" checked> مخططات الرادار والأحداث
+            </label>
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+              <input type="checkbox" id="rptIncTactical" checked> لقطة اللوحة التكتيكية والتشكيلة
+            </label>
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+              <input type="checkbox" id="rptIncClips" checked> سجل اللقطات المقصوصة
+            </label>
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+              <input type="checkbox" id="rptIncNotes" checked> توصيات الطاقم الفني
+            </label>
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer; grid-column:span 2;">
+              <input type="checkbox" id="rptIncSignatures" checked> خانة اعتماد وتوقيع الإدارة الفنية
+            </label>
+          </div>
+          <div style="margin-top:8px; font-size:0.78rem; color:var(--text-muted);" id="rptClipCountBadge">
+            جاري تحضير المقاطع التكتيكية...
+          </div>
+        </div>
+
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--primary" id="generateAndPrintPdfBtn">🖨️ طباعة وحفظ التقرير (Print / Save as PDF)</button>
+        <button class="btn btn--ghost" id="downloadHtmlReportBtn" title="تنزيل ملف HTML جاهز للطباعة بدون إنترنت">📥 تنزيل الوثيقة</button>
+        <button class="btn btn--ghost" id="cancelPdfReportBtn">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
   <script src="assets/js/app.js"></script>
   <script src="assets/js/video-player.js"></script>
   <script src="assets/js/tagging.js"></script>
   <script src="assets/js/tactical-board.js"></script>
   <script src="assets/js/charts.js"></script>
   <script src="assets/js/compare.js"></script>
+  <script src="assets/js/report-pdf.js"></script>
 </body>
 </html>
