@@ -125,6 +125,13 @@ window.switchView = function(viewId) {
   if (viewId === 'dashboard') updateDashboardCounters();
   if (viewId === 'reports') initReports();
   if (viewId === 'tagging') initTaggingView();
+  if (viewId === 'heatmap' && window.HeatmapStudio) {
+    window.HeatmapStudio.populatePlayerSelect();
+    window.HeatmapStudio.render();
+  }
+  if (viewId === 'ai' && window.AiAssistant) {
+    window.AiAssistant.renderQuickScorecards();
+  }
 };
 
 // ── Dashboard Counters ────────────────────────────────────

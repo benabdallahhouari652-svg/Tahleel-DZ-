@@ -49,6 +49,18 @@
         <svg viewBox="0 0 20 20"><path d="M7 10a4 4 0 100-8 4 4 0 000 8zM15 11a3 3 0 100-6 3 3 0 000 6zM7 12c-3.31 0-6 2.69-6 6v1h12v-1c0-3.31-2.69-6-6-6zM15 13c-.88 0-1.7.23-2.42.63.85 1.13 1.42 2.5 1.42 4.07v1h6v-1c0-2.55-2.09-4.7-5-4.7z" fill="currentColor"/></svg>
         الفرق واللاعبين
       </button>
+      <button class="tab-btn" data-view="heatmap" role="tab">
+        <svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="10" cy="10" r="4" fill="#FF4444"/><circle cx="10" cy="10" r="2" fill="#FFD166"/></svg>
+        التحليل الحراري
+      </button>
+      <button class="tab-btn" data-view="ai" role="tab">
+        <svg viewBox="0 0 20 20"><path d="M10 2a3 3 0 00-3 3v1H5a2 2 0 00-2 2v7a2 2 0 002 2h10a2 2 0 002-2V8a2 2 0 00-2-2h-2V5a3 3 0 00-3-3zm-1 8a1 1 0 112 0 1 1 0 01-2 0zm5 0a1 1 0 112 0 1 1 0 01-2 0z" fill="currentColor"/></svg>
+        المساعد الذكي 🤖
+      </button>
+      <button class="tab-btn" data-view="about" role="tab">
+        <svg viewBox="0 0 20 20"><circle cx="10" cy="7" r="3" fill="currentColor"/><path d="M4 18c0-3.31 2.69-6 6-6s6 2.69 6 6" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+        حول المطور
+      </button>
     </nav>
 
     <div class="topnav__actions">
@@ -58,8 +70,9 @@
       <button class="btn-icon" title="إعدادات">
         <svg viewBox="0 0 20 20"><path d="M10 13a3 3 0 100-6 3 3 0 000 6z" fill="currentColor"/><path d="M17.66 10c0-.34-.03-.68-.08-1l2.16-1.68-2-3.46-2.54.98A7.96 7.96 0 0012 3.26V.72h-4v2.54a7.96 7.96 0 00-3.2 1.58L2.26 3.86l-2 3.46L2.42 9c-.05.32-.08.66-.08 1s.03.68.08 1L.26 12.68l2 3.46 2.54-.98A7.96 7.96 0 008 16.74v2.54h4v-2.54a7.96 7.96 0 003.2-1.58l2.54.98 2-3.46L17.74 11c.05-.32.08-.66.08-1z" fill="currentColor" opacity=".5"/></svg>
       </button>
-      <div class="user-avatar" title="المحلل">
-        <span>MA</span>
+      <div class="user-avatar" title="الكابتن الهواري بن عبد الله — مؤسس ومطور" onclick="switchView('about')" style="cursor:pointer; overflow:hidden;">
+        <img src="assets/icons/houari-benabdallah.jpg" alt="الهواري بن عبد الله" style="width:100%; height:100%; object-fit:cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <span style="display:none;">HB</span>
       </div>
     </div>
   </header>
@@ -184,6 +197,14 @@
             <button class="qa-btn" onclick="switchView('reports')">
               <svg viewBox="0 0 32 32" width="28"><path d="M6 6h20v20H6z" stroke="var(--accent)" stroke-width="1.5" fill="none" rx="2"/><line x1="10" y1="12" x2="22" y2="12" stroke="var(--accent)" stroke-width="1.5"/><line x1="10" y1="17" x2="18" y2="17" stroke="var(--accent)" stroke-width="1.5"/><line x1="10" y1="22" x2="20" y2="22" stroke="var(--accent)" stroke-width="1.5"/></svg>
               التقارير
+            </button>
+            <button class="qa-btn" onclick="switchView('heatmap')">
+              <svg viewBox="0 0 32 32" width="28"><circle cx="16" cy="16" r="12" stroke="#FF4444" stroke-width="1.5" fill="none"/><circle cx="16" cy="16" r="7" fill="#FF4444" opacity=".6"/><circle cx="16" cy="16" r="3" fill="#FFD166"/></svg>
+              التحليل الحراري
+            </button>
+            <button class="qa-btn" onclick="switchView('ai')">
+              <svg viewBox="0 0 32 32" width="28"><rect x="6" y="8" width="20" height="16" rx="4" stroke="#06D6A0" stroke-width="1.5" fill="none"/><circle cx="12" cy="15" r="2" fill="#06D6A0"/><circle cx="20" cy="15" r="2" fill="#06D6A0"/><line x1="12" y1="20" x2="20" y2="20" stroke="#06D6A0" stroke-width="1.5"/></svg>
+              المساعد الذكي 🤖
             </button>
             <button class="qa-btn" id="importBtn">
               <svg viewBox="0 0 32 32" width="28"><path d="M16 4v18M8 14l8 8 8-8" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"/><rect x="4" y="24" width="24" height="4" rx="2" fill="var(--accent)" opacity=".3"/></svg>
@@ -1107,6 +1128,276 @@
       </div>
     </section>
 
+    <!-- ==============================
+         VIEW 7: HEATMAP & TOUCHMAP STUDIO
+    =============================== -->
+    <section class="view" id="view-heatmap">
+      <div class="heatmap-layout">
+        <!-- Sidebar Controls -->
+        <aside class="heatmap-sidebar">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <h3 style="margin:0; font-size:1.1rem; color:var(--text);">🔥 التحليل الحراري</h3>
+            <span class="badge" style="background:rgba(0,212,255,0.15); color:var(--accent); font-size:0.75rem; padding:2px 8px; border-radius:12px;">v2.5 Pro</span>
+          </div>
+          <p style="font-size:0.8rem; color:var(--text-muted); margin:0; line-height:1.4;">
+            خريطة التوزيع والانتشار واللمسات ومناطق الضغط التكتيكي ومخطط التسديدات (xG).
+          </p>
+
+          <!-- Team & Player Selector -->
+          <div class="form-group">
+            <label style="font-size:0.8rem; color:var(--text-muted);">الفريق المستهدف:</label>
+            <select id="hmTeamSelect" class="sport-select" style="width:100%; font-size:0.85rem;">
+              <option value="home">🔴 الفريق المضيف</option>
+              <option value="away">🔵 الفريق الزائر</option>
+              <option value="both">⚡ كلا الفريقين (المباراة كاملة)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label style="font-size:0.8rem; color:var(--text-muted);">اللاعب المحدد:</label>
+            <select id="hmPlayerSelect" class="sport-select" style="width:100%; font-size:0.85rem;">
+              <option value="all">⭐ كامل الفريق (All Players)</option>
+            </select>
+          </div>
+
+          <!-- Slider: Radius -->
+          <div class="hm-slider-group">
+            <label>
+              <span>نصف قطر التوهج (Radius):</span>
+              <strong id="hmRadiusVal" style="color:var(--accent);">45px</strong>
+            </label>
+            <input type="range" id="hmRadiusSlider" min="20" max="80" value="45" style="width:100%; accent-color:var(--accent);">
+          </div>
+
+          <!-- Slider: Intensity -->
+          <div class="hm-slider-group">
+            <label>
+              <span>كثافة الحرارة (Intensity):</span>
+              <strong id="hmIntensityVal" style="color:var(--accent);">65%</strong>
+            </label>
+            <input type="range" id="hmIntensitySlider" min="0.2" max="1.0" step="0.05" value="0.65" style="width:100%; accent-color:var(--accent);">
+          </div>
+
+          <!-- Stats Box -->
+          <div class="hm-stats-box">
+            <div>📍 إجمالي النقاط المسجلة: <strong id="hmPointsCount" style="color:var(--accent);">0</strong></div>
+            <div id="hmShotStats" style="display:flex; flex-direction:column; gap:2px; font-size:0.78rem; color:var(--text-muted);"></div>
+          </div>
+
+          <!-- Presets -->
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <label style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">⚡ نماذج تكتيكية جاهزة:</label>
+            <div class="hm-preset-list">
+              <button class="hm-preset-btn" data-preset="preset-right-wing">🏃 زيادة عددية بالجناح الأيمن (Overload)</button>
+              <button class="hm-preset-btn" data-preset="preset-central-mid">⚽ صانع ألعاب وبناء لعب مركزي</button>
+              <button class="hm-preset-btn" data-preset="preset-high-press">🔴 ضغط عالي وافتكاك في ملعب الخصم</button>
+              <button class="hm-preset-btn" data-preset="preset-gk-box">🧤 تغطية حارس المرمى لمنطقة الجزاء</button>
+              <button class="hm-preset-btn" data-preset="preset-shotmap">🎯 خريطة تسديدات هجومية كاملة (xG)</button>
+            </div>
+          </div>
+
+          <!-- Bottom Actions -->
+          <div style="display:flex; flex-direction:column; gap:8px; margin-top:auto;">
+            <button class="btn btn--accent" id="hmAnalyzeWithAiBtn" style="font-size:0.85rem;">🤖 تحليل الخريطة بالمساعد الذكي</button>
+            <div style="display:flex; gap:6px;">
+              <button class="btn btn--primary" id="hmExportBtn" style="flex:1; font-size:0.8rem;">📥 تصدير HD</button>
+              <button class="btn btn--ghost" id="hmClearBtn" style="flex:1; font-size:0.8rem;">🗑️ مسح</button>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Main Pitch Canvas Area -->
+        <main class="heatmap-main">
+          <div class="heatmap-header">
+            <div class="hm-mode-group">
+              <button class="hm-mode-btn active" data-mode="heatmap">🔥 خريطة الكثافة الحرارية</button>
+              <button class="hm-mode-btn" data-mode="touchmap">📍 خريطة اللمسات والتمرير</button>
+              <button class="hm-mode-btn" data-mode="shotmap">🎯 خريطة التسديدات و xG</button>
+              <button class="hm-mode-btn" data-mode="pressure">🛡️ مناطق الضغط واسترجاع الكرة</button>
+            </div>
+            <div style="font-size:0.82rem; color:var(--text-muted); display:flex; align-items:center; gap:8px;">
+              <span>💡 انقر أو اسحب الفأرة على الملعب لإضافة نقاط وتحديد مسارات التحرك</span>
+            </div>
+          </div>
+
+          <div class="heatmap-canvas-container">
+            <canvas id="heatmapCanvas" width="840" height="520"></canvas>
+          </div>
+        </main>
+      </div>
+    </section>
+
+    <!-- ==============================
+         VIEW 8: AI TACTICAL ASSISTANT
+    =============================== -->
+    <section class="view" id="view-ai">
+      <div class="ai-assistant-layout">
+        <!-- Sidebar: KPI Gauge & Quick Prompts -->
+        <aside class="ai-sidebar">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <h3 style="margin:0; font-size:1.1rem; color:var(--text);">🤖 المساعد التكتيكي الذكي</h3>
+            <span class="badge" style="background:rgba(6,214,160,0.15); color:#06D6A0; font-size:0.75rem; padding:2px 8px; border-radius:12px;">محلل معتمد</span>
+          </div>
+          <p style="font-size:0.8rem; color:var(--text-muted); margin:0; line-height:1.4;">
+            تحليل ذكي فوري لمجريات اللقاء وتوجيهات عملية للمدرب والطاقم الفني.
+          </p>
+
+          <!-- Match Dominance Gauge -->
+          <div class="ai-dominance-box" id="aiMatchDominanceGauge">
+            <!-- Populated dynamically by ai-assistant.js -->
+          </div>
+
+          <!-- Quick Tactical Analysis Buttons -->
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <label style="font-size:0.82rem; color:var(--text-muted); font-weight:700;">⚡ تقارير تحليل فورية بنقرة واحدة:</label>
+            <div class="ai-chips-container">
+              <button class="ai-chip-btn" data-prompt="audit">
+                <span>🧠</span>
+                <div style="text-align:right;">
+                  <strong>التشخيص التكتيكي الشامل</strong>
+                  <div style="font-size:0.72rem; color:var(--text-muted);">نقاط القوة والضعف والتحولات</div>
+                </div>
+              </button>
+              <button class="ai-chip-btn" data-prompt="halftime">
+                <span>⏱️</span>
+                <div style="text-align:right;">
+                  <strong>توجيهات ما بين الشوطين</strong>
+                  <div style="font-size:0.72rem; color:var(--text-muted);">محاضرة غرفة الملابس و 3 قرارات عاجلة</div>
+                </div>
+              </button>
+              <button class="ai-chip-btn" data-prompt="defense-gk">
+                <span>🧤</span>
+                <div style="text-align:right;">
+                  <strong>تحليل حراسة المرمى والدفاع</strong>
+                  <div style="font-size:0.72rem; color:var(--text-muted);">التصديات، الكرات العرضية، والخط الخلفي</div>
+                </div>
+              </button>
+              <button class="ai-chip-btn" data-prompt="formation">
+                <span>🔄</span>
+                <div style="text-align:right;">
+                  <strong>اقتراح تعديل الرسم التكتيكي</strong>
+                  <div style="font-size:0.72rem; color:var(--text-muted);">الانتقال من 4-3-3 إلى 4-2-3-1</div>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Integrated Export Actions -->
+          <div style="display:flex; flex-direction:column; gap:6px; margin-top:auto;">
+            <button class="btn btn--primary" id="aiSendToPdfBtn" style="font-size:0.85rem;">
+              📄 إدراج في تقرير المباراة الرسمي (PDF)
+            </button>
+            <div style="display:flex; gap:6px;">
+              <button class="btn btn--ghost" id="aiCopyInsightBtn" style="flex:1; font-size:0.8rem;">📋 نسخ</button>
+              <button class="btn btn--ghost" id="aiDownloadInsightBtn" style="flex:1; font-size:0.8rem;">📥 تنزيل MD</button>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Main Chat & Output Area -->
+        <main class="ai-main-chat">
+          <div class="ai-chat-header">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:1.2rem;">💬</span>
+              <div>
+                <strong style="color:var(--text); font-size:0.95rem;">غرفة الحوار والتحليل التكتيكي الفوري</strong>
+                <div style="font-size:0.75rem; color:#06D6A0;">● متصل ومستعد لتحليل كافة سيناريوهات اللقاء</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ai-chat-messages" id="aiChatMessages">
+            <!-- Messages populated by ai-assistant.js -->
+          </div>
+
+          <div class="ai-chat-input-bar">
+            <form class="ai-input-form" id="aiChatForm">
+              <input type="text" id="aiChatInput" class="ai-input-box" placeholder="اطرح سؤالاً تكتيكياً على المساعد الذكي (مثال: كيف نعالج بطء ارتداد الأظهرة؟)...">
+              <button type="submit" class="btn btn--primary">إرسال ➔</button>
+            </form>
+          </div>
+        </main>
+      </div>
+    </section>
+
+    <!-- ==============================
+         VIEW 9: ABOUT FOUNDER
+    =============================== -->
+    <section class="view" id="view-about">
+      <div class="about-view-wrapper">
+        <div class="about-hero-card">
+          <div class="about-avatar-wrapper">
+            <img src="assets/icons/houari-benabdallah.jpg" alt="الهواري بن عبد الله" class="about-avatar-img" onerror="this.src=''; this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div style="display:none; width:100%; height:100%; border-radius:50%; background:linear-gradient(135deg, #00D4FF, #0070CC); align-items:center; justify-content:center; font-size:3rem; color:#fff;">🏅</div>
+            <div class="about-badge-flag" title="الجمهورية الجزائرية الديمقراطية الشعبية">🇩🇿</div>
+          </div>
+
+          <h1 class="about-name">الكابتن الهواري بن عبد الله</h1>
+          <div class="about-title">مؤسس ومطور منصة «تحليل DZ» (Tahleel DZ)</div>
+          <div style="font-size:0.92rem; color:var(--text-muted); margin-top:4px;">
+            تكنولوجيا تحليل الأداء الرياضي المتطورة — مستوحاة من كبرى المنصات العالمية (Dartfish · LiveTag Pro · Once Sport)
+          </div>
+
+          <!-- Roles Grid -->
+          <div class="about-grid-cards">
+            <div class="about-role-card">
+              <div class="about-role-icon">🏃</div>
+              <div class="about-role-title">مربي رياضي</div>
+              <div style="font-size:0.78rem; color:var(--text-muted); margin-top:4px;">إعداد بدني وتربوي للفرق والناشئين</div>
+            </div>
+            <div class="about-role-card">
+              <div class="about-role-icon">🧤</div>
+              <div class="about-role-title">مدرب حراس مرمى</div>
+              <div style="font-size:0.78rem; color:var(--text-muted); margin-top:4px;">تطوير المهارات التخصصية للحراس</div>
+            </div>
+            <div class="about-role-card">
+              <div class="about-role-icon">📊</div>
+              <div class="about-role-title">محلل أداء رياضي</div>
+              <div style="font-size:0.78rem; color:var(--text-muted); margin-top:4px;">تحليل الفيديو والمؤشرات التكتيكية</div>
+            </div>
+            <div class="about-role-card">
+              <div class="about-role-icon">💻</div>
+              <div class="about-role-title">مطور برمجيات رياضية</div>
+              <div style="font-size:0.78rem; color:var(--text-muted); margin-top:4px;">هندسة منصات الفيديو التفاعلية والذكاء الاصطناعي</div>
+            </div>
+          </div>
+
+          <!-- Bio & Vision -->
+          <div class="about-bio-card">
+            <h3 style="color:var(--accent); margin:0 0 12px 0; font-size:1.15rem;">🏅 مسيرة مهنية وخبرة ميدانية في خدمة الرياضة الجزائرية</h3>
+            <p>
+              مربٍّ رياضي ومدرب جزائري متعدد التخصصات، يجمع بين الممارسة الميدانية الحية في تدريب حراس المرمى وتحليل الأداء الفني في ملاعب كرة القدم، وبين الشغف العميق بتطوير البرمجيات الرياضية الحديثة.
+            </p>
+            <p>
+              كان ضمن الطاقم الفني والتقني في استحقاقات وطنية وقارية بارزة، من أهمها:
+              <strong style="color:#06D6A0;">بطولة أفريقيا لكرة القدم المدرسية — UNAF الجزائر 2025</strong>.
+            </p>
+
+            <div class="about-quote">
+              "إن تطوير كرة القدم الحديثة لم يعد مجرد تدريب بدني، بل أصبح علماً دقيقاً يعتمد على تفكيك تفاصيل الفيديو، رصد التحركات التكتيكية بالذكاء الاصطناعي، وتقديم المعلومة الدقيقة للمدرب في اللحظة المناسبة لحسم المباريات."
+            </div>
+
+            <p style="margin-bottom:0;">
+              تم تصميم وبرمجة منصة <strong style="color:var(--accent);">تحليل DZ</strong> لتكون الأداة الجزائرية والعربية الأولى المتكاملة التي تلبي احتياجات المدرب، المحلل، وإدارة الأندية بمواصفات عالمية، مع الاستغناء التام عن البرمجيات الأجنبية باهظة التكلفة.
+            </p>
+          </div>
+
+          <!-- Official Sign-off -->
+          <div style="margin-top:24px; padding-top:16px; border-top:1px solid var(--card-border); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+            <div style="text-align:right;">
+              <div style="font-size:0.8rem; color:var(--text-muted);">المؤسس والمطور:</div>
+              <strong style="font-size:1.1rem; color:var(--text);">الهواري بن عبد الله</strong>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <button class="btn btn--primary" onclick="switchView('analyzer')">📹 الانتقال لمحلل الفيديو</button>
+              <button class="btn btn--accent" onclick="switchView('heatmap')">🔥 استعراض التحليل الحراري</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <!-- Toast Notifications -->
@@ -1497,6 +1788,8 @@
   <script src="assets/js/charts.js"></script>
   <script src="assets/js/compare.js"></script>
   <script src="assets/js/squad-manager.js"></script>
+  <script src="assets/js/heatmap.js"></script>
+  <script src="assets/js/ai-assistant.js"></script>
   <script src="assets/js/report-pdf.js"></script>
 </body>
 </html>
