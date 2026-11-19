@@ -1,0 +1,1801 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تحليل DZ — تحليل الفيديو الرياضي</title>
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="icon" href="assets/icons/logo.svg" type="image/svg+xml">
+  <style>.video-file-picker:focus-within { outline: 2px solid currentColor; outline-offset: 3px; }</style>
+</head>
+<body class="app-shell">
+
+  <!-- ===== TOP NAV ===== -->
+  <header class="topnav" id="topNav">
+    <div class="topnav__brand">
+      <svg class="topnav__logo" viewBox="0 0 36 36" fill="none">
+        <circle cx="18" cy="18" r="18" fill="#00D4FF" opacity=".15"/>
+        <path d="M10 26 L18 10 L26 26 M13 21 H23" stroke="#00D4FF" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+      <span class="topnav__name">تحليل <strong>DZ</strong></span>
+    </div>
+
+    <nav class="topnav__tabs" role="tablist">
+      <button class="tab-btn active" data-view="dashboard" role="tab">
+        <svg viewBox="0 0 20 20"><path d="M3 3h6v6H3zM11 3h6v6h-6zM3 11h6v6H3zM11 11h6v6h-6z" fill="currentColor" opacity=".8"/></svg>
+        لوحة التحكم
+      </button>
+      <button class="tab-btn" data-view="analyzer" role="tab">
+        <svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5" fill="none"/><polygon points="8,7 14,10 8,13" fill="currentColor"/></svg>
+        محلل الفيديو
+      </button>
+      <button class="tab-btn" data-view="tagging" role="tab">
+        <svg viewBox="0 0 20 20"><rect x="2" y="5" width="16" height="2.5" rx="1.2" fill="currentColor"/><rect x="2" y="9" width="11" height="2.5" rx="1.2" fill="currentColor"/><rect x="2" y="13" width="14" height="2.5" rx="1.2" fill="currentColor"/></svg>
+        نظام التاغينغ
+      </button>
+      <button class="tab-btn" data-view="tactical" role="tab">
+        <svg viewBox="0 0 20 20"><rect x="2" y="2" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="10" cy="10" r="2" fill="currentColor"/><line x1="6" y1="6" x2="14" y2="14" stroke="currentColor" stroke-width="1"/><line x1="14" y1="6" x2="6" y2="14" stroke="currentColor" stroke-width="1"/></svg>
+        اللوحة التكتيكية
+      </button>
+      <button class="tab-btn" data-view="reports" role="tab">
+        <svg viewBox="0 0 20 20"><path d="M4 4h12v2H4zM4 8h8v2H4zM4 12h10v2H4z" fill="currentColor"/><rect x="2" y="2" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+        التقارير
+      </button>
+      <button class="tab-btn" data-view="compare" role="tab">
+        <svg viewBox="0 0 20 20"><rect x="2" y="4" width="7" height="12" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="11" y="4" width="7" height="12" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+        المقارنة
+      </button>
+      <button class="tab-btn" data-view="squad" role="tab">
+        <svg viewBox="0 0 20 20"><path d="M7 10a4 4 0 100-8 4 4 0 000 8zM15 11a3 3 0 100-6 3 3 0 000 6zM7 12c-3.31 0-6 2.69-6 6v1h12v-1c0-3.31-2.69-6-6-6zM15 13c-.88 0-1.7.23-2.42.63.85 1.13 1.42 2.5 1.42 4.07v1h6v-1c0-2.55-2.09-4.7-5-4.7z" fill="currentColor"/></svg>
+        الفرق واللاعبين
+      </button>
+      <button class="tab-btn" data-view="heatmap" role="tab">
+        <svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="10" cy="10" r="4" fill="#FF4444"/><circle cx="10" cy="10" r="2" fill="#FFD166"/></svg>
+        التحليل الحراري
+      </button>
+      <button class="tab-btn" data-view="ai" role="tab">
+        <svg viewBox="0 0 20 20"><path d="M10 2a3 3 0 00-3 3v1H5a2 2 0 00-2 2v7a2 2 0 002 2h10a2 2 0 002-2V8a2 2 0 00-2-2h-2V5a3 3 0 00-3-3zm-1 8a1 1 0 112 0 1 1 0 01-2 0zm5 0a1 1 0 112 0 1 1 0 01-2 0z" fill="currentColor"/></svg>
+        المساعد الذكي 🤖
+      </button>
+      <button class="tab-btn" data-view="about" role="tab">
+        <svg viewBox="0 0 20 20"><circle cx="10" cy="7" r="3" fill="currentColor"/><path d="M4 18c0-3.31 2.69-6 6-6s6 2.69 6 6" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+        حول المطور
+      </button>
+    </nav>
+
+    <div class="topnav__actions">
+      <button class="btn-icon" id="themeToggle" title="تبديل الثيم">
+        <svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="4" fill="currentColor"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.5"/></svg>
+      </button>
+      <button class="btn-icon" title="إعدادات">
+        <svg viewBox="0 0 20 20"><path d="M10 13a3 3 0 100-6 3 3 0 000 6z" fill="currentColor"/><path d="M17.66 10c0-.34-.03-.68-.08-1l2.16-1.68-2-3.46-2.54.98A7.96 7.96 0 0012 3.26V.72h-4v2.54a7.96 7.96 0 00-3.2 1.58L2.26 3.86l-2 3.46L2.42 9c-.05.32-.08.66-.08 1s.03.68.08 1L.26 12.68l2 3.46 2.54-.98A7.96 7.96 0 008 16.74v2.54h4v-2.54a7.96 7.96 0 003.2-1.58l2.54.98 2-3.46L17.74 11c.05-.32.08-.66.08-1z" fill="currentColor" opacity=".5"/></svg>
+      </button>
+      <div class="user-avatar" title="الكابتن الهواري بن عبد الله — مؤسس ومطور" onclick="switchView('about')" style="cursor:pointer; overflow:hidden;">
+        <img src="assets/icons/houari-benabdallah.jpg" alt="الهواري بن عبد الله" style="width:100%; height:100%; object-fit:cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <span style="display:none;">HB</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="main-content" id="mainContent">
+
+    <!-- ==============================
+         VIEW 1: DASHBOARD
+    =============================== -->
+    <section class="view active" id="view-dashboard">
+      <div class="dashboard-grid">
+
+        <!-- Welcome Banner -->
+        <div class="card card--hero col-span-full">
+          <div class="hero-text">
+            <h1>مرحباً بك في <span class="accent">تحليل DZ</span></h1>
+            <p>منصة تحليل الفيديو الرياضي الجزائرية الاحترافية — مستوحاة من Dartfish · LiveTag Pro · Once Sport</p>
+            <div class="hero-actions">
+              <button class="btn btn--primary" onclick="switchView('analyzer')">
+                <svg viewBox="0 0 20 20" width="16"><polygon points="6,4 16,10 6,16" fill="currentColor"/></svg>
+                تحليل فيديو جديد
+              </button>
+              <button class="btn btn--ghost" onclick="switchView('tagging')">
+                <svg viewBox="0 0 20 20" width="16"><path d="M4 10h12M10 4v12" stroke="currentColor" stroke-width="2"/></svg>
+                جلسة تاغينغ مباشر
+              </button>
+              <a href="tutorial-video.html" class="btn btn--accent" style="text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+                🎬 فيديو دليل المدرب وتنزيل الشرح
+              </a>
+            </div>
+          </div>
+          <div class="hero-visual">
+            <div class="stat-badge">
+              <span class="stat-num" id="statMatches">0</span>
+              <span>مباراة محللة</span>
+            </div>
+            <div class="stat-badge accent">
+              <span class="stat-num" id="statTags">0</span>
+              <span>تاغ مُسجَّل</span>
+            </div>
+            <div class="stat-badge">
+              <span class="stat-num" id="statClips">0</span>
+              <span>مقطع مُصدَّر</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Sessions -->
+        <div class="card col-span-2">
+          <div class="card__header">
+            <h3>الجلسات الأخيرة</h3>
+            <button class="btn btn--sm btn--ghost">عرض الكل</button>
+          </div>
+          <div class="session-list" id="sessionList">
+            <div class="session-item">
+              <div class="session-sport soccer"></div>
+              <div class="session-info">
+                <strong>نهائي الدوري — الفريق أ vs الفريق ب</strong>
+                <span>كرة قدم · 90 دقيقة · 247 تاغ</span>
+              </div>
+              <span class="session-badge">مكتمل</span>
+            </div>
+            <div class="session-item">
+              <div class="session-sport basketball"></div>
+              <div class="session-info">
+                <strong>ربع النهائي — كرة السلة</strong>
+                <span>كرة سلة · 48 دقيقة · 183 تاغ</span>
+              </div>
+              <span class="session-badge processing">معالجة</span>
+            </div>
+            <div class="session-item">
+              <div class="session-sport handball"></div>
+              <div class="session-info">
+                <strong>مباراة البطولة — كرة اليد</strong>
+                <span>كرة يد · 60 دقيقة · 312 تاغ</span>
+              </div>
+              <span class="session-badge">مكتمل</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Stats Chart -->
+        <div class="card">
+          <div class="card__header">
+            <h3>إحصائيات هذا الأسبوع</h3>
+          </div>
+          <canvas id="weekChart" width="300" height="180"></canvas>
+        </div>
+
+        <!-- Tag Distribution -->
+        <div class="card">
+          <div class="card__header">
+            <h3>توزيع التاغات</h3>
+          </div>
+          <canvas id="tagPieChart" width="220" height="180"></canvas>
+          <div class="legend" id="pieLegend"></div>
+        </div>
+
+        <!-- Quick Tag Panel Preview -->
+        <div class="card col-span-full">
+          <div class="card__header">
+            <h3>ⓘ الوصول السريع</h3>
+          </div>
+          <div class="quick-access-grid">
+            <button class="qa-btn" onclick="switchView('analyzer')">
+              <svg viewBox="0 0 32 32" width="28"><circle cx="16" cy="16" r="14" stroke="var(--accent)" stroke-width="1.5" fill="none"/><polygon points="12,10 24,16 12,22" fill="var(--accent)"/></svg>
+              محلل الفيديو
+            </button>
+            <button class="qa-btn" onclick="switchView('tagging')">
+              <svg viewBox="0 0 32 32" width="28"><rect x="4" y="8" width="24" height="4" rx="2" fill="var(--accent)"/><rect x="4" y="15" width="18" height="4" rx="2" fill="var(--accent)" opacity=".6"/><rect x="4" y="22" width="21" height="4" rx="2" fill="var(--accent)" opacity=".3"/></svg>
+              تاغينغ فوري
+            </button>
+            <button class="qa-btn" onclick="switchView('tactical')">
+              <svg viewBox="0 0 32 32" width="28"><rect x="4" y="4" width="24" height="24" rx="3" stroke="var(--accent)" stroke-width="1.5" fill="none"/><circle cx="11" cy="12" r="2.5" fill="var(--accent)"/><circle cx="21" cy="12" r="2.5" fill="#FF6B6B"/><circle cx="11" cy="22" r="2.5" fill="var(--accent)"/><circle cx="21" cy="22" r="2.5" fill="#FF6B6B"/><circle cx="16" cy="16" r="3" fill="#FFD166"/></svg>
+              اللوحة التكتيكية
+            </button>
+            <button class="qa-btn" onclick="switchView('compare')">
+              <svg viewBox="0 0 32 32" width="28"><rect x="3" y="6" width="12" height="20" rx="2" stroke="var(--accent)" stroke-width="1.5" fill="none"/><rect x="17" y="6" width="12" height="20" rx="2" stroke="#FF6B6B" stroke-width="1.5" fill="none"/></svg>
+              مقارنة الفيديو
+            </button>
+            <button class="qa-btn" onclick="switchView('reports')">
+              <svg viewBox="0 0 32 32" width="28"><path d="M6 6h20v20H6z" stroke="var(--accent)" stroke-width="1.5" fill="none" rx="2"/><line x1="10" y1="12" x2="22" y2="12" stroke="var(--accent)" stroke-width="1.5"/><line x1="10" y1="17" x2="18" y2="17" stroke="var(--accent)" stroke-width="1.5"/><line x1="10" y1="22" x2="20" y2="22" stroke="var(--accent)" stroke-width="1.5"/></svg>
+              التقارير
+            </button>
+            <button class="qa-btn" onclick="switchView('heatmap')">
+              <svg viewBox="0 0 32 32" width="28"><circle cx="16" cy="16" r="12" stroke="#FF4444" stroke-width="1.5" fill="none"/><circle cx="16" cy="16" r="7" fill="#FF4444" opacity=".6"/><circle cx="16" cy="16" r="3" fill="#FFD166"/></svg>
+              التحليل الحراري
+            </button>
+            <button class="qa-btn" onclick="switchView('ai')">
+              <svg viewBox="0 0 32 32" width="28"><rect x="6" y="8" width="20" height="16" rx="4" stroke="#06D6A0" stroke-width="1.5" fill="none"/><circle cx="12" cy="15" r="2" fill="#06D6A0"/><circle cx="20" cy="15" r="2" fill="#06D6A0"/><line x1="12" y1="20" x2="20" y2="20" stroke="#06D6A0" stroke-width="1.5"/></svg>
+              المساعد الذكي 🤖
+            </button>
+            <button class="qa-btn" id="importBtn">
+              <svg viewBox="0 0 32 32" width="28"><path d="M16 4v18M8 14l8 8 8-8" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"/><rect x="4" y="24" width="24" height="4" rx="2" fill="var(--accent)" opacity=".3"/></svg>
+              استيراد فيديو
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==============================
+         VIEW 2: VIDEO ANALYZER
+    =============================== -->
+    <section class="view" id="view-analyzer">
+      <div class="analyzer-layout">
+
+        <!-- Left Sidebar: Clip List -->
+        <aside class="analyzer-sidebar">
+          <div class="sidebar-header">
+            <h3>قائمة المقاطع</h3>
+            <div style="display:flex; gap:4px; flex-wrap:wrap;">
+              <button class="btn btn--sm btn--accent" id="presentationModeBtn" title="عرض المحاضرة الفنية لجميع المقاطع بالتسلسل">🎬 عرض الكل</button>
+              <button class="btn btn--sm btn--ghost" id="openPdfReportFromAnalyzerBtn" title="توليد تقرير المباراة الفني الشامل PDF">📄 تقرير PDF</button>
+              <button class="btn btn--sm btn--primary" id="addClipBtn" title="إضافة مقطع جديد">+ قص</button>
+            </div>
+          </div>
+          <input type="text" id="searchClipsInput" class="search-input" placeholder="بحث في المقاطع التكتيكية...">
+          <div class="clip-list" id="clipList">
+            <!-- Dynamically populated by JS with rich tactical clips -->
+          </div>
+        </aside>
+
+        <!-- Center: Video Player -->
+        <div class="video-center">
+          <!-- Video + Canvas Overlay -->
+          <div class="video-wrapper" id="videoWrapper">
+            <div class="video-placeholder" id="videoPlaceholder">
+              <div class="upload-zone" id="uploadZone">
+                <svg viewBox="0 0 64 64" width="64" fill="none">
+                  <circle cx="32" cy="32" r="30" stroke="var(--accent)" stroke-width="1.5" opacity=".4"/>
+                  <path d="M32 44V20M22 30l10-10 10 10" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"/>
+                </svg>
+                <span>أو</span>
+                <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+                  <label class="btn btn--primary video-file-picker" for="videoFileInput" style="position:relative; cursor:pointer;">
+                    اختر ملف من جهازك
+                    <input type="file" id="videoFileInput" accept="video/*,.mp4,.webm,.mov,.avi,.mkv" style="position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer;">
+                  </label>
+                  <button class="btn btn--accent" id="loadDemoVideoBtn">⚡ تشغيل فيديو تجريبي</button>
+                </div>
+                <small>يُنصح بـ MP4 أو WebM. دعم الصيغ الأخرى يعتمد على المتصفح.</small>
+              </div>
+            </div>
+            <video id="mainVideo" crossorigin="anonymous" style="display:none; width:100%; height:100%; object-fit:contain;" controls></video>
+            <canvas id="drawCanvas" class="draw-canvas"></canvas>
+
+            <!-- Video Clip Recording Pulse Indicator -->
+            <div class="video-rec-indicator" id="videoRecIndicator" style="display:none;">
+              <span class="rec-dot-pulse"></span>
+              <span id="recTimerText">🔴 جاري تسجيل اللقطة... 00:00 / 00:10</span>
+              <button class="btn btn--sm btn--danger" id="stopRecBtn" style="padding: 2px 8px; font-size: 11px;">إيقاف وحفظ الآن</button>
+            </div>
+
+            <!-- Coach Presentation Mode Overlay Banner -->
+            <div class="presentation-overlay" id="presentationOverlay" style="display:none;">
+              <div class="presentation-badge">
+                <span class="pres-live-dot"></span>
+                <span>🎬 المحاضرة الفنية للمدرب</span>
+              </div>
+              <div class="presentation-info">
+                <strong id="presClipTitle">هجمة مضادة #1</strong>
+                <span id="presClipProgress">لقطة 1 من 4</span>
+              </div>
+              <div class="presentation-controls">
+                <button class="pres-btn" id="presPrevBtn" title="اللقطة السابقة">⏮ سابق</button>
+                <button class="pres-btn" id="presPlayPauseBtn" title="إيقاف مؤقت للشرح">⏸ إيقاف للشرح</button>
+                <button class="pres-btn" id="presNextBtn" title="اللقطة التالية">تالية ⏭</button>
+                <button class="pres-btn pres-btn--exit" id="presExitBtn" title="إنهاء العرض التقديمي">✕ خروج</button>
+              </div>
+            </div>
+
+            <div class="video-overlay-controls" id="videoOverlayControls" style="display:none">
+              <div class="vc-speed-btns">
+                <button class="vc-btn" data-speed="0.25">¼x</button>
+                <button class="vc-btn" data-speed="0.5">½x</button>
+                <button class="vc-btn active" data-speed="1">1x</button>
+                <button class="vc-btn" data-speed="2">2x</button>
+                <button class="vc-btn" data-speed="4">4x</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Professional Video Trimmer & Precise Frame Navigation Bar -->
+          <div class="video-trimmer-bar" id="videoTrimmerBar">
+            <div class="vtb-group" title="تحديد نقاط البداية والنهاية للقطة">
+              <button class="vtb-btn" id="markInBtn" title="تحديد بداية اللقطة [In] (اختصار لوحة المفاتيح: I)">
+                <span class="vtb-key">I</span> [ In
+              </button>
+              <button class="vtb-btn" id="markOutBtn" title="تحديد نهاية اللقطة [Out] (اختصار لوحة المفاتيح: O)">
+                ] Out <span class="vtb-key">O</span>
+              </button>
+              <button class="vtb-btn vtb-btn--accent" id="quick10sClipBtn" title="تحديد نطاق تلقائي 10 ثوانٍ حول التوقيت الحالي (±5 ثوانٍ)">
+                ⚡ لقطة 10 ثوانٍ
+              </button>
+            </div>
+
+            <div class="vtb-sep"></div>
+
+            <!-- Jog Shuttle & Frame Navigation -->
+            <div class="vtb-group" title="التنقل الدقيق إطاراً بإطار">
+              <button class="vtb-btn" id="stepBackFrameBtn" title="إطار للخلف -1 Frame (0.04s) — اختصار: ,">⏮ إطار</button>
+              <button class="vtb-btn" id="jumpBack5sBtn" title="رجوع 5 ثوانٍ">⏪ 5s-</button>
+              <button class="vtb-btn vtb-btn--play" id="trimmerPlayPauseBtn" title="تشغيل / إيقاف مؤقت (Space)">▶</button>
+              <button class="vtb-btn" id="jumpFwd5sBtn" title="تقديم 5 ثوانٍ">+5s ⏩</button>
+              <button class="vtb-btn" id="stepFwdFrameBtn" title="إطار للأمام +1 Frame (0.04s) — اختصار: .">إطار ⏭</button>
+            </div>
+
+            <div class="vtb-sep"></div>
+
+            <!-- Trim Range Info Badge -->
+            <div class="vtb-range-badge" id="vtbRangeBadge" title="النطاق الزمني المحدد حالياً للقطة">
+              <span class="vtb-range-icon">✂️</span>
+              <span class="vtb-range-val" id="vtbRangeVal">0:00.0 ➔ 0:10.0</span>
+              <span class="vtb-range-dur" id="vtbRangeDur">(10.0 ث)</span>
+            </div>
+
+            <div class="vtb-actions">
+              <button class="vtb-btn" id="loopRangeBtn" title="تشغيل وتكرار المقطع المحدد باستمرار لدراسة الحالة (اختصار: L)">
+                🔁 تكرار اللقطة
+              </button>
+              <button class="btn btn--sm btn--primary" id="saveTrimmedClipBtn" title="قص وحفظ اللقطة في قائمة المقاطع">
+                ✂️ حفظ اللقطة
+              </button>
+              <button class="btn btn--sm btn--accent" id="exportTrimmedClipBtn" title="تصدير وتنزيل اللقطة المقصوصة مباشرة كملف فيديو MP4/WebM">
+                🎥 تصدير اللقطة (MP4)
+              </button>
+            </div>
+          </div>
+
+          <!-- Timeline -->
+          <div class="timeline-container" id="timelineContainer">
+            <div class="tl-header">
+              <span class="tl-time" id="tlCurrentTime">0:00</span>
+              <div class="tl-tools">
+                <button class="tl-btn active" id="tlTagMode" title="وضع التاغ">
+                  <svg viewBox="0 0 16 16" width="14"><path d="M2 2h7l5 6-5 6H2V2z" fill="currentColor"/></svg>
+                </button>
+                <button class="tl-btn" id="tlDrawMode" title="وضع الرسم">
+                  <svg viewBox="0 0 16 16" width="14"><path d="M3 13L13 3M3 13h4M3 13v-4" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+                </button>
+                <button class="tl-btn" id="tlZoomIn" title="تكبير">+</button>
+                <button class="tl-btn" id="tlZoomOut" title="تصغير">−</button>
+              </div>
+              <span class="tl-time" id="tlDuration">0:00</span>
+            </div>
+            <div class="tl-track-area" id="tlTrackArea">
+              <div class="tl-ruler" id="tlRuler"></div>
+              
+              <!-- Draggable In/Out Range Highlight Overlay -->
+              <div class="tl-range-highlight" id="tlRangeHighlight" style="display:none;">
+                <div class="tl-range-handle tl-range-handle--start" id="tlRangeHandleIn" title="سحب بداية اللقطة [In]"></div>
+                <div class="tl-range-label" id="tlRangeLabel">نطاق اللقطة</div>
+                <div class="tl-range-handle tl-range-handle--end" id="tlRangeHandleOut" title="سحب نهاية اللقطة [Out]"></div>
+              </div>
+
+              <!-- Tag tracks -->
+              <div class="tl-track" data-label="هجوم" data-color="#00D4FF">
+                <div class="tl-track-label">هجوم</div>
+                <div class="tl-track-body" id="track-attack"></div>
+              </div>
+              <div class="tl-track" data-label="دفاع" data-color="#FF6B6B">
+                <div class="tl-track-label">دفاع</div>
+                <div class="tl-track-body" id="track-defense"></div>
+              </div>
+              <div class="tl-track" data-label="أهداف" data-color="#FFD166">
+                <div class="tl-track-label">أهداف</div>
+                <div class="tl-track-body" id="track-goals"></div>
+              </div>
+              <div class="tl-track" data-label="أخطاء" data-color="#06D6A0">
+                <div class="tl-track-label">أخطاء</div>
+                <div class="tl-track-body" id="track-fouls"></div>
+              </div>
+              <div class="tl-playhead" id="tlPlayhead"></div>
+            </div>
+          </div>
+
+          <!-- Advanced Video Telestration & Drawing Tools Bar -->
+          <div class="draw-toolbar" id="drawToolbar">
+            <span class="draw-toolbar__label">🎨 أدوات التحليل:</span>
+            
+            <!-- Group 1: Spotlights, Magnifier & Rings -->
+            <button class="draw-tool" data-tool="spotlight" title="🔦 كشاف الضوء (تسليط الضوء على اللاعب وتعتيم المحيط)">
+              <svg viewBox="0 0 20 20" width="16"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity=".3"/><circle cx="10" cy="10" r="3" fill="currentColor"/></svg>
+            </button>
+            <button class="draw-tool" data-tool="magnifier" title="🔍 عدسة تكبير تفصيلية (VAR Zoom 2.5x) لتوضيح حركة الأقدام ولمسات اليد">
+              <svg viewBox="0 0 20 20" width="16"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="2" fill="none"/><line x1="13" y1="13" x2="18" y2="18" stroke="currentColor" stroke-width="2.5"/><line x1="8" y1="5" x2="8" y2="11" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="8" x2="11" y2="8" stroke="currentColor" stroke-width="1.5"/></svg>
+            </button>
+            <button class="draw-tool" data-tool="player-ring" title="🎯 حلقة أرضية ثلاثية الأبعاد تحت قدمي اللاعب">
+              <svg viewBox="0 0 20 20" width="16"><ellipse cx="10" cy="10" rx="8" ry="4" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity=".2"/></svg>
+            </button>
+            <button class="draw-tool" data-tool="player-badge" title="🎽 شارة وبطاقة اللاعب الذكية (#10 - اسم اللاعب والدور التكتيكي)">
+              <svg viewBox="0 0 20 20" width="16"><rect x="3" y="2" width="14" height="9" rx="2" stroke="currentColor" stroke-width="1.5" fill="currentColor" fill-opacity=".2"/><line x1="10" y1="11" x2="10" y2="16" stroke="currentColor" stroke-width="2"/><ellipse cx="10" cy="17" rx="5" ry="2" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+            </button>
+            <button class="draw-tool" data-tool="player-link" title="📏 خط ربط تكتيكي مع حساب المسافة بين اللاعبين">
+              <svg viewBox="0 0 20 20" width="16"><line x1="3" y1="16" x2="17" y2="4" stroke="currentColor" stroke-width="2" stroke-dasharray="3,2"/><circle cx="3" cy="16" r="2.5" fill="currentColor"/><circle cx="17" cy="4" r="2.5" fill="currentColor"/></svg>
+            </button>
+            
+            <div class="draw-toolbar__sep"></div>
+
+            <!-- Group 2: Tactical Arrows & Movement -->
+            <button class="draw-tool active" data-tool="arrow" title="➡️ سهم حركة مستقيم">
+              <svg viewBox="0 0 20 20" width="16"><line x1="4" y1="16" x2="16" y2="4" stroke="currentColor" stroke-width="2"/><polyline points="10,4 16,4 16,10" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+            </button>
+            <button class="draw-tool" data-tool="curved-arrow" title="⤴️ سهم مقوس (تمريرة منحنية / التفاف)">
+              <svg viewBox="0 0 20 20" width="16"><path d="M4 16 Q6 5 15 6" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="12,2 16,6 12,10" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+            </button>
+            <button class="draw-tool" data-tool="aerial-pass" title="🎯 قوس تمريرة هوائية ساقطة (Lofted / Chip Pass Arc) خلف خط الدفاع">
+              <svg viewBox="0 0 20 20" width="16"><path d="M3 16 Q10 2 17 14" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="3,2"/><circle cx="17" cy="14" r="2" fill="currentColor"/><line x1="3" y1="16" x2="17" y2="16" stroke="currentColor" stroke-width="1" stroke-dasharray="2,2" opacity=".6"/></svg>
+            </button>
+            <button class="draw-tool" data-tool="dribble" title="〰️ مسار مراوغة وجري متعرج بالكرة">
+              <svg viewBox="0 0 20 20" width="16"><path d="M3 16 L6 13 L9 16 L12 11 L15 14 L17 8" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="13,8 17,8 17,12" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+            </button>
+
+            <div class="draw-toolbar__sep"></div>
+
+            <!-- Group 3: Shapes, Spaces & Highlights -->
+            <button class="draw-tool" data-tool="offside-line" title="📐 خط التسلل والعمق التكتيكي ثلاثي الأبعاد (3D Offside Line & Virtual Wall)">
+              <svg viewBox="0 0 20 20" width="16"><polygon points="3,16 17,16 17,7 3,7" fill="currentColor" fill-opacity=".25"/><line x1="3" y1="16" x2="17" y2="16" stroke="currentColor" stroke-width="2.5"/><line x1="3" y1="7" x2="17" y2="7" stroke="currentColor" stroke-width="1" stroke-dasharray="2,2"/></svg>
+            </button>
+            <button class="draw-tool" data-tool="space-polygon" title="🔷 تظليل المساحة الحرة (Tactical Free Space / Half-Spaces)">
+              <svg viewBox="0 0 20 20" width="16"><polygon points="5,5 15,3 17,14 6,17" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity=".25"/></svg>
+            </button>
+            <button class="draw-tool" data-tool="circle" title="⭕ دائرة لتحديد اللاعب">
+              <svg viewBox="0 0 20 20" width="16"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+            </button>
+            <button class="draw-tool" data-tool="rect" title="🔲 منطقة تكتيكية مظللة (مساحة بين الخطوط)">
+              <svg viewBox="0 0 20 20" width="16"><rect x="3" y="5" width="14" height="10" rx="1.5" stroke="currentColor" stroke-width="2" fill="currentColor" fill-opacity=".2"/></svg>
+            </button>
+            <button class="draw-tool" data-tool="angle" title="📐 قياس زاوية الرؤية والتسديد على المرمى">
+              <svg viewBox="0 0 20 20" width="16"><path d="M4 16 L16 16 M4 16 L14 6" stroke="currentColor" stroke-width="2"/><path d="M8 16 A 5 5 0 0 0 10 12" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+            </button>
+            <button class="draw-tool" data-tool="laser" title="⚡ ليزر متوهج نيون">
+              <svg viewBox="0 0 20 20" width="16"><path d="M3 17 L10 10 L8 7 L17 3 L13 12 L10 10" stroke="currentColor" stroke-width="1.8" fill="currentColor" fill-opacity=".3"/></svg>
+            </button>
+            <button class="draw-tool" data-tool="freehand" title="✏️ رسم حر بالقلم">
+              <svg viewBox="0 0 20 20" width="16"><path d="M3 16 Q8 5 13 10 T18 4" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+            </button>
+            <button class="draw-tool" data-tool="text" title="🏷️ بطاقة تكتيكية واسم اللاعب">T</button>
+
+            <div class="draw-toolbar__sep"></div>
+
+            <!-- Quick Color Palette -->
+            <div class="draw-colors-quick">
+              <button class="draw-color-btn active" data-color="#00D4FF" style="background:#00D4FF" title="أزرق نيون"></button>
+              <button class="draw-color-btn" data-color="#FFD166" style="background:#FFD166" title="أصفر"></button>
+              <button class="draw-color-btn" data-color="#FF6B6B" style="background:#FF6B6B" title="أحمر"></button>
+              <button class="draw-color-btn" data-color="#10B981" style="background:#10B981" title="أخضر"></button>
+              <button class="draw-color-btn" data-color="#FF8C42" style="background:#FF8C42" title="برتقالي"></button>
+              <button class="draw-color-btn" data-color="#FFFFFF" style="background:#FFFFFF" title="أبيض"></button>
+            </div>
+
+            <!-- Custom Color Picker -->
+            <label class="color-pick-wrap" title="لون مخصص">
+              <input type="color" id="drawColor" value="#00D4FF" class="color-pick">
+              <svg viewBox="0 0 20 20" width="14"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+            </label>
+
+            <!-- Line Width -->
+            <select id="drawLineWidth" class="draw-select" title="سماكة الخط">
+              <option value="2">رفيع (2px)</option>
+              <option value="4" selected>متوسط (4px)</option>
+              <option value="6">سميك (6px)</option>
+              <option value="8">عريض (8px)</option>
+            </select>
+
+            <div class="draw-toolbar__sep"></div>
+
+            <!-- Actions -->
+            <button class="draw-tool" id="undoBtn" title="تراجع (Ctrl+Z)">↩</button>
+            <button class="draw-tool" id="redoBtn" title="إعادة (Ctrl+Y)">↪</button>
+            <button class="draw-tool" id="clearCanvasBtn" title="مسح كل الرسومات">🗑️</button>
+
+            <div class="draw-toolbar__sep"></div>
+            <button class="btn btn--sm btn--accent" id="captureFrameBtn" title="تصدير لقطة الفيديو الحالية مع الرسومات كصورة HD">📸 لقطة HD</button>
+            <button class="btn btn--sm btn--primary" id="openClipExportModalBtn" title="تصدير وتسجيل لقطة فيديو مدمجة بالرسومات التكتيكية (MP4 / WebM)">🎥 تصدير فيديو (Clip)</button>
+          </div>
+        </div>
+
+        <!-- Right Sidebar: Tag Panel -->
+        <aside class="tag-panel" id="tagPanel">
+          <div class="tag-panel__header">
+            <h3>لوحة التاغ</h3>
+            <button class="btn btn--sm btn--ghost" id="editTagsBtn">✎ تعديل</button>
+          </div>
+          <div class="tag-panel__sport-select">
+            <select id="sportSelect" class="sport-select">
+              <option value="soccer">كرة القدم</option>
+              <option value="basketball">كرة السلة</option>
+              <option value="handball">كرة اليد</option>
+              <option value="volleyball">كرة الطائرة</option>
+              <option value="rugby">الرغبي</option>
+            </select>
+          </div>
+
+          <!-- Tag Buttons Grid -->
+          <div class="tag-grid" id="tagGrid">
+            <!-- Dynamically rendered by JS -->
+          </div>
+
+          <!-- Recent Tags Log -->
+          <div class="tag-log">
+            <div class="tag-log__header">
+              <h4>سجل التاغات</h4>
+              <span id="tagCount" class="tag-count-badge">0</span>
+            </div>
+            <div class="tag-log__list" id="tagLogList">
+              <p class="tag-log__empty">لا توجد تاغات بعد — ابدأ التاغينغ</p>
+            </div>
+          </div>
+        </aside>
+
+      </div>
+    </section>
+
+    <!-- ==============================
+         VIEW 3: TAGGING SYSTEM
+    =============================== -->
+    <section class="view" id="view-tagging">
+      <div class="tagging-layout">
+        <div class="tagging-header">
+          <h2>نظام التاغينغ المتقدم</h2>
+          <div class="tagging-controls">
+            <select id="matchSelect" class="sport-select" style="max-width:220px">
+              <option>نهائي الدوري — الفريق أ vs الفريق ب</option>
+              <option>ربع النهائي — كرة السلة</option>
+              <option>مباراة جديدة...</option>
+            </select>
+            <button class="btn btn--primary" id="liveTagBtn">
+              <span class="live-dot"></span>
+              بدء تاغينغ مباشر
+            </button>
+            <button class="btn btn--ghost" id="exportTagsBtn">تصدير التاغات</button>
+          </div>
+        </div>
+
+        <div class="tagging-main">
+          <!-- Custom Tag Builder -->
+          <div class="card tag-builder-card">
+            <div class="card__header">
+              <h3>بناء لوحة تاغ مخصصة</h3>
+              <button class="btn btn--sm btn--ghost" id="addTagTypeBtn">+ إضافة نوع</button>
+            </div>
+            <div class="tag-builder-grid" id="tagBuilderGrid">
+              <!-- Editable tag buttons -->
+            </div>
+            <div class="tag-builder-form" id="tagBuilderForm" style="display:none">
+              <input type="text" id="newTagName" placeholder="اسم التاغ" class="tag-input">
+              <input type="color" id="newTagColor" value="#00D4FF" class="color-pick">
+              <select id="newTagCategory" class="draw-select">
+                <option value="attack">هجوم</option>
+                <option value="defense">دفاع</option>
+                <option value="set">كرات ثابتة</option>
+                <option value="individual">فردي</option>
+                <option value="error">أخطاء</option>
+              </select>
+              <input type="text" id="newTagHotkey" placeholder="اختصار (مثال: Q)" maxlength="1" class="tag-input" style="width:60px">
+              <button class="btn btn--primary btn--sm" id="saveTagTypeBtn">حفظ</button>
+              <button class="btn btn--ghost btn--sm" id="cancelTagTypeBtn">إلغاء</button>
+            </div>
+          </div>
+
+          <!-- Live Tagging Area -->
+          <div class="card live-tag-card">
+            <div class="card__header">
+              <h3>منطقة التاغينغ المباشر</h3>
+              <div class="live-timer" id="liveTimer">00:00:00</div>
+            </div>
+            <div class="live-tag-buttons" id="liveTagButtons">
+              <!-- Rendered dynamically -->
+            </div>
+            <div class="live-event-feed" id="liveEventFeed">
+              <div class="event-feed__header">السجل المباشر</div>
+              <div class="event-feed__list" id="eventFeedList">
+                <div class="event-item">
+                  <span class="event-time">00:03:42</span>
+                  <span class="event-tag attack">تمريرة حاسمة</span>
+                  <span class="event-player">اللاعب #10</span>
+                </div>
+                <div class="event-item">
+                  <span class="event-time">00:05:17</span>
+                  <span class="event-tag goal">هدف</span>
+                  <span class="event-player">اللاعب #9</span>
+                </div>
+                <div class="event-item">
+                  <span class="event-time">00:07:55</span>
+                  <span class="event-tag foul">خطأ</span>
+                  <span class="event-player">اللاعب #4</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hotkey Map -->
+          <div class="card hotkey-card">
+            <div class="card__header">
+              <h3>خريطة الاختصارات</h3>
+            </div>
+            <div class="hotkey-grid" id="hotkeyGrid">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==============================
+         VIEW 4: TACTICAL BOARD
+    =============================== -->
+    <section class="view" id="view-tactical">
+      <div class="tactical-layout">
+        <div class="tactical-header">
+          <div class="tactical-title-box">
+            <h2>اللوحة التكتيكية والتدريبية</h2>
+            <span class="badge badge--accent" id="tacCurrentPlanName">خطة تدريبية تكتيكية</span>
+          </div>
+
+          <div class="tactical-controls">
+            <!-- Sport & Pitch View -->
+            <select id="pitchSport" class="sport-select" title="نوع الرياضة">
+              <option value="soccer">⚽ كرة القدم</option>
+              <option value="basketball">🏀 كرة السلة</option>
+              <option value="handball">🤾 كرة اليد</option>
+              <option value="volleyball">🏐 كرة الطائرة</option>
+              <option value="rugby">🏉 الرغبي</option>
+            </select>
+
+            <select id="pitchViewSelect" class="sport-select" title="عرض الملعب">
+              <option value="full">🏟️ ملعب كامل</option>
+              <option value="half">🥅 نصف ملعب (هجوم/دفاع)</option>
+            </select>
+
+            <button class="btn btn--sm btn--ghost" id="tacUndoBtn" title="تراجع (Ctrl+Z)">↩️ تراجع</button>
+            <button class="btn btn--sm btn--ghost" id="tacRedoBtn" title="إعادة (Ctrl+Y)">↪️ إعادة</button>
+            <button class="btn btn--sm btn--ghost" id="clearPitchBtn" title="مسح اللوحة">🗑️ مسح الكل</button>
+
+            <!-- Library, Save, Export -->
+            <button class="btn btn--sm btn--ghost" id="openLibraryBtn" title="عرض الخطط والتمارين">📂 مكتبة الخطط</button>
+            <button class="btn btn--sm btn--primary" id="savePlanModalBtn" title="حفظ الخطة في المتصفح">💾 حفظ الخطة</button>
+            <button class="btn btn--sm btn--accent" id="exportPitchHdBtn" title="تحميل صورة HD">📥 تصدير صورة HD</button>
+
+            <!-- More dropdown -->
+            <div class="dropdown-more">
+              <button class="btn btn--sm btn--ghost" id="moreTacMenuBtn">⚙️ المزيد ▾</button>
+              <div class="dropdown-menu-tac" id="moreTacMenu" style="display:none;">
+                <button id="exportJsonBtn">📄 تصدير ملف JSON</button>
+                <button id="importJsonBtn">📤 استيراد ملف JSON</button>
+                <input type="file" id="tacFileInput" accept=".json" style="display:none">
+                <button id="printTacBtn">🖨️ طباعة الخطة (PDF)</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tactical-main">
+          <!-- Toolbar -->
+          <div class="tactical-toolbar" id="tacticalToolbar">
+            <!-- Group 1: Players & Elements -->
+            <div class="tool-group">
+              <span class="tool-group__label">👥 اللاعبون والكرات</span>
+              <div class="tac-tool-grid">
+                <button class="tac-tool active" data-tac-tool="select" title="تحديد وتحريك (سحب)">
+                  <svg viewBox="0 0 20 20" width="16"><path d="M4 4l4 12 3-5 5-3z" fill="currentColor"/></svg>
+                  <span>تحديد</span>
+                </button>
+                <button class="tac-tool" data-tac-tool="player-home" title="لاعب (الفريق أ)">
+                  <span class="tool-dot" style="background:#00D4FF"></span>
+                  <span>فريق أ</span>
+                </button>
+                <button class="tac-tool" data-tac-tool="player-away" title="لاعب (الفريق ب)">
+                  <span class="tool-dot" style="background:#FF6B6B"></span>
+                  <span>فريق ب</span>
+                </button>
+                <button class="tac-tool" data-tac-tool="goalkeeper" title="حارس مرمى">
+                  <span class="tool-dot" style="background:#FACC15">🧤</span>
+                  <span>حارس</span>
+                </button>
+                <button class="tac-tool" data-tac-tool="ball" title="كرة قدم">
+                  <span class="tool-dot" style="background:#fff; color:#000">⚽</span>
+                  <span>كرة</span>
+                </button>
+                <button class="tac-tool" data-tac-tool="eraser" title="ممحاة (اضغط لحذف أي عنصر)">
+                  <span>🧹</span>
+                  <span>ممحاة</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Group 2: Paths & Arrows -->
+            <div class="tool-group">
+              <span class="tool-group__label">🎯 مسارات الحركة والأسهم</span>
+              <div class="tac-tool-grid">
+                <button class="tac-tool" data-tac-tool="arrow-move" title="سهم حركة مستقيم">
+                  <svg viewBox="0 0 20 20" width="16"><line x1="3" y1="17" x2="17" y2="3" stroke="#00D4FF" stroke-width="2.5"/><polyline points="10,3 17,3 17,10" fill="none" stroke="#00D4FF" stroke-width="2.5"/></svg>
+                  <span>سهم حركة</span>
+                </button>
+                <button class="tac-tool" data-tac-tool="arrow-pass" title="سهم تمريرة متقطع">
+                  <svg viewBox="0 0 20 20" width="16"><line x1="3" y1="17" x2="17" y2="3" stroke="#FFD166" stroke-width="2.5" stroke-dasharray="3,2"/><polyline points="10,3 17,3 17,10" fill="none" stroke="#FFD166" stroke-width="2.5"/></svg>
+                  <span>تمريرة</span>
+                </button>
+                <button class="tac-tool" data-tac-tool="arrow-curve" title="سهم مقوس / التفاف">
+                  <svg viewBox="0 0 20 20" width="16"><path d="M4 17 Q 6 4, 16 6" fill="none" stroke="#10B981" stroke-width="2.5"/><polyline points="13,2 17,6 13,10" fill="none" stroke="#10B981" stroke-width="2.5"/></svg>
+                  <span>سهم منحني</span>
+                </button>
+                <button class="tac-tool" data-tac-tool="arrow-dribble" title="مسار مراوغة متعرج">
+                  <svg viewBox="0 0 20 20" width="16"><path d="M3 16 L6 13 L9 16 L12 11 L15 14 L17 8" fill="none" stroke="#FF8C42" stroke-width="2.5"/><polyline points="13,8 17,8 17,12" fill="none" stroke="#FF8C42" stroke-width="2.5"/></svg>
+                  <span>مراوغة</span>
+                </button>
+                <button class="tac-tool" data-tac-tool="freehand" title="رسم حر بالقلم">
+                  <svg viewBox="0 0 20 20" width="16"><path d="M3 15 C 6 18, 10 10, 17 5" fill="none" stroke="#A78BFA" stroke-width="2.5"/></svg>
+                  <span>رسم حر</span>
+                </button>
+                <button class="tac-tool" data-tac-tool="zone" title="تظليل منطقة تكتيكية">
+                  <svg viewBox="0 0 20 20" width="16"><rect x="3" y="5" width="14" height="10" rx="2" stroke="#38BDF8" stroke-width="1.8" fill="#38BDF8" fill-opacity=".25"/></svg>
+                  <span>منطقة</span>
+                </button>
+                <button class="tac-tool" data-tac-tool="text" title="نص وملاحظة على الملعب">
+                  <svg viewBox="0 0 20 20" width="16"><text x="10" y="15" text-anchor="middle" font-size="14" font-weight="900" fill="#FACC15">T</text></svg>
+                  <span>نص</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Group 3: Advanced Training Equipment -->
+            <div class="tool-group">
+              <span class="tool-group__label">🏋️ المعدات التدريبية المتطورة</span>
+              <div class="tac-equip-grid">
+                <button class="tac-tool-mini" data-tac-tool="equip-cone" title="مخروط تدريب برتقالي">
+                  <span class="equip-icon">🔺</span>
+                  <span class="equip-label">مخروط</span>
+                </button>
+                <button class="tac-tool-mini" data-tac-tool="equip-cone-yellow" title="مخروط تدريب أصفر">
+                  <span class="equip-icon">🟡</span>
+                  <span class="equip-label">مخروط 2</span>
+                </button>
+                <button class="tac-tool-mini" data-tac-tool="equip-pole" title="عمود رشاقة وتوجيه">
+                  <span class="equip-icon">💈</span>
+                  <span class="equip-label">عمود</span>
+                </button>
+                <button class="tac-tool-mini" data-tac-tool="equip-hurdle" title="حاجز قفز (قابل للتدوير)">
+                  <span class="equip-icon">🚧</span>
+                  <span class="equip-label">حاجز</span>
+                </button>
+                <button class="tac-tool-mini" data-tac-tool="equip-mannequin" title="دمية دفاعية / حائط صد">
+                  <span class="equip-icon">🧍</span>
+                  <span class="equip-label">دمية صد</span>
+                </button>
+                <button class="tac-tool-mini" data-tac-tool="equip-ladder" title="سلم السرعة والتوافق">
+                  <span class="equip-icon">🪜</span>
+                  <span class="equip-label">سلم سرعة</span>
+                </button>
+                <button class="tac-tool-mini" data-tac-tool="equip-minigoal" title="مرمى صغير للتمارين">
+                  <span class="equip-icon">🥅</span>
+                  <span class="equip-label">مرمى صغير</span>
+                </button>
+                <button class="tac-tool-mini" data-tac-tool="equip-ring" title="حلقة الرشاقة والقدم السريعة">
+                  <span class="equip-icon">⭕</span>
+                  <span class="equip-label">حلقة</span>
+                </button>
+                <button class="tac-tool-mini" data-tac-tool="equip-marker" title="علامة أرضية مسطحة">
+                  <span class="equip-icon">🔘</span>
+                  <span class="equip-label">علامة</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Group 4: Formations & Presets -->
+            <div class="tool-group">
+              <span class="tool-group__label">📋 التشكيلات والتمارين</span>
+              <div class="form-row-compact">
+                <select id="formationSelect" class="draw-select" style="flex:1">
+                  <option value="4-3-3">تشكيلة 4-3-3 (هجومي)</option>
+                  <option value="4-2-3-1">تشكيلة 4-2-3-1 (متوازن)</option>
+                  <option value="4-4-2">تشكيلة 4-4-2 (تقليدي)</option>
+                  <option value="3-5-2">تشكيلة 3-5-2 (وسط مكثف)</option>
+                  <option value="5-3-2">تشكيلة 5-3-2 (دفاعي)</option>
+                </select>
+                <button class="btn btn--sm btn--primary" id="applyFormationBtn">تطبيق</button>
+              </div>
+              <button class="btn btn--sm btn--ghost" id="openDrillsPresetBtn" style="margin-top:6px; width:100%">
+                ⚡ تمارين تدريبية جاهزة
+              </button>
+            </div>
+          </div>
+
+          <!-- Pitch Canvas & Floating Inspector -->
+          <div class="pitch-wrapper" id="pitchWrapper">
+            <canvas id="pitchCanvas"></canvas>
+
+            <!-- Floating Inspector for Selected Item -->
+            <div class="tac-floating-inspector" id="tacInspector" style="display:none;">
+              <div class="inspector-badge" id="inspIcon">⚽</div>
+              <div class="inspector-fields">
+                <div class="insp-item" id="inspNumBox">
+                  <label>الرقم:</label>
+                  <input type="text" id="inspNumInput" maxlength="3" class="insp-input">
+                </div>
+                <div class="insp-item" id="inspNameBox">
+                  <label>الاسم:</label>
+                  <input type="text" id="inspNameInput" class="insp-input" placeholder="GK, ST...">
+                </div>
+                <div class="insp-item" id="inspRotateBox" style="display:none;">
+                  <button class="btn btn--sm btn--ghost" id="inspRotateBtn" title="تدوير 45 درجة">🔄 تدوير 45°</button>
+                </div>
+                <div class="insp-item" id="inspColorBox">
+                  <label>اللون:</label>
+                  <div class="insp-colors">
+                    <button class="color-dot" style="background:#00D4FF" data-color="#00D4FF" title="أزرق"></button>
+                    <button class="color-dot" style="background:#FF6B6B" data-color="#FF6B6B" title="أحمر"></button>
+                    <button class="color-dot" style="background:#FACC15" data-color="#FACC15" title="أصفر"></button>
+                    <button class="color-dot" style="background:#10B981" data-color="#10B981" title="أخضر"></button>
+                    <button class="color-dot" style="background:#FFFFFF" data-color="#FFFFFF" title="أبيض"></button>
+                  </div>
+                </div>
+              </div>
+              <div class="inspector-actions">
+                <button class="btn btn--sm btn--danger" id="inspDeleteBtn" title="حذف العنصر">🗑️ حذف</button>
+                <button class="btn btn--sm btn--ghost" id="inspCloseBtn">✕</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Animation controls & Quick Notes -->
+          <div class="anim-controls" id="animControls">
+            <div class="anim-playback-group">
+              <button class="tl-btn" id="animPrev" title="الإطار السابق">⏮</button>
+              <button class="tl-btn" id="animPlay" title="تشغيل / إيقاف">▶</button>
+              <button class="tl-btn" id="animNext" title="الإطار التالي">⏭</button>
+              <div class="anim-frames">
+                <span id="animFrameInfo">الإطار 1 / 1</span>
+              </div>
+              <button class="btn btn--sm btn--ghost" id="addFrameBtn">+ لقطة جديدة (Keyframe)</button>
+              <button class="btn btn--sm btn--ghost" id="clearFramesBtn">مسح الإطارات</button>
+            </div>
+            <div class="notes-quick-toggle">
+              <input type="text" id="quickNotesInput" class="tag-input" placeholder="📝 ملاحظة تكتيكية سريعة لهذا التمرين / الخطة..." style="width:340px;">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==============================
+         VIEW 5: REPORTS
+    =============================== -->
+    <section class="view" id="view-reports">
+      <div class="reports-layout">
+        <div class="reports-header">
+          <h2>التقارير والإحصائيات</h2>
+          <div class="report-actions">
+            <select class="sport-select" id="reportMatchSel">
+              <option>نهائي الدوري — الفريق أ vs الفريق ب</option>
+              <option>ربع النهائي — كرة السلة</option>
+            </select>
+            <button class="btn btn--primary" id="exportPdfBtn">📄 تصدير PDF</button>
+            <button class="btn btn--ghost" id="exportCsvBtn">📊 تصدير CSV</button>
+          </div>
+        </div>
+
+        <div class="reports-grid">
+          <!-- KPI Cards -->
+          <div class="kpi-row col-span-full">
+            <div class="kpi-card">
+              <span class="kpi-label">إجمالي التاغات</span>
+              <span class="kpi-value" id="kpiTotal">247</span>
+              <span class="kpi-change up">+12%</span>
+            </div>
+            <div class="kpi-card">
+              <span class="kpi-label">نسبة الهجوم</span>
+              <span class="kpi-value">62%</span>
+              <span class="kpi-change up">+5%</span>
+            </div>
+            <div class="kpi-card">
+              <span class="kpi-label">دقة التمريرات</span>
+              <span class="kpi-value">84%</span>
+              <span class="kpi-change down">-2%</span>
+            </div>
+            <div class="kpi-card">
+              <span class="kpi-label">الأهداف المسجلة</span>
+              <span class="kpi-value">3</span>
+              <span class="kpi-change">+0%</span>
+            </div>
+            <div class="kpi-card">
+              <span class="kpi-label">الأخطاء</span>
+              <span class="kpi-value">18</span>
+              <span class="kpi-change down">-8%</span>
+            </div>
+          </div>
+
+          <!-- Bar Chart -->
+          <div class="card chart-card">
+            <div class="card__header"><h3>الأحداث حسب الشوط</h3></div>
+            <canvas id="halfChart" width="400" height="220"></canvas>
+          </div>
+
+          <!-- Radar Chart -->
+          <div class="card chart-card">
+            <div class="card__header"><h3>الأداء الشامل</h3></div>
+            <canvas id="radarChart" width="300" height="220"></canvas>
+          </div>
+
+          <!-- Tag Breakdown Table -->
+          <div class="card col-span-full">
+            <div class="card__header">
+              <h3>تفاصيل التاغات</h3>
+              <input type="text" placeholder="بحث..." class="search-input" style="max-width:200px">
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>التاغ</th>
+                  <th>الفئة</th>
+                  <th>العدد</th>
+                  <th>الوقت الأول</th>
+                  <th>الوقت الأخير</th>
+                  <th>النسبة</th>
+                  <th>إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="reportTable">
+                <tr><td>هجمة مضادة</td><td><span class="cat-badge attack">هجوم</span></td><td>34</td><td>2:14</td><td>87:33</td><td><div class="progress-bar"><div style="width:42%"></div></div></td><td><button class="btn btn--sm btn--ghost">عرض المقاطع</button></td></tr>
+                <tr><td>تمريرة حاسمة</td><td><span class="cat-badge attack">هجوم</span></td><td>28</td><td>5:07</td><td>79:12</td><td><div class="progress-bar"><div style="width:34%"></div></div></td><td><button class="btn btn--sm btn--ghost">عرض المقاطع</button></td></tr>
+                <tr><td>ضغط دفاعي</td><td><span class="cat-badge defense">دفاع</span></td><td>47</td><td>1:30</td><td>90:00</td><td><div class="progress-bar"><div style="width:58%"></div></div></td><td><button class="btn btn--sm btn--ghost">عرض المقاطع</button></td></tr>
+                <tr><td>هدف</td><td><span class="cat-badge goal">أهداف</span></td><td>3</td><td>22:15</td><td>68:40</td><td><div class="progress-bar"><div style="width:4%"></div></div></td><td><button class="btn btn--sm btn--ghost">عرض المقاطع</button></td></tr>
+                <tr><td>خطأ صفراء</td><td><span class="cat-badge foul">أخطاء</span></td><td>18</td><td>8:45</td><td>85:20</td><td><div class="progress-bar"><div style="width:22%"></div></div></td><td><button class="btn btn--sm btn--ghost">عرض المقاطع</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==============================
+         VIEW 6: COMPARISON
+    =============================== -->
+    <section class="view" id="view-compare">
+      <div class="compare-layout">
+        <div class="compare-header">
+          <h2>مقارنة الفيديوهات</h2>
+          <div class="compare-mode-btns">
+            <button class="btn btn--sm btn--primary active" id="sideBySideBtn">جنباً إلى جنب</button>
+            <button class="btn btn--sm btn--ghost" id="overlayBtn">تراكب</button>
+            <button class="btn btn--sm btn--accent" id="loadDemoCompareBtn">⚡ تجربة فيديوهين للمقارنة</button>
+          </div>
+        </div>
+
+        <div class="compare-videos" id="compareVideos">
+          <div class="compare-slot" id="compareSlotA">
+            <div class="compare-slot__label">الفيديو A</div>
+            <input type="file" id="compareFileA" accept="video/*" style="display:none">
+            <div class="compare-slot__inner">
+              <video id="videoA" style="width:100%;height:100%;object-fit:contain;display:none" controls></video>
+              <div class="compare-upload" id="compareUploadA">
+                <button class="btn btn--primary" onclick="document.getElementById('compareFileA').click()">اختر فيديو A</button>
+              </div>
+            </div>
+          </div>
+          <div class="compare-divider">
+            <div class="sync-indicator" id="syncIndicator" title="مزامنة">⇔ مزامنة</div>
+          </div>
+          <div class="compare-slot" id="compareSlotB">
+            <div class="compare-slot__label">الفيديو B</div>
+            <input type="file" id="compareFileB" accept="video/*" style="display:none">
+            <div class="compare-slot__inner">
+              <video id="videoB" style="width:100%;height:100%;object-fit:contain;display:none" controls></video>
+              <div class="compare-upload" id="compareUploadB">
+                <button class="btn btn--primary" onclick="document.getElementById('compareFileB').click()">اختر فيديو B</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sync Controls -->
+        <div class="sync-controls">
+          <button class="btn btn--ghost" id="syncPlayPause">▶ تشغيل المزامن</button>
+          <button class="btn btn--ghost" id="syncReset">⟳ إعادة ضبط</button>
+          <label class="sync-offset-label">
+            إزاحة الوقت:
+            <input type="number" id="syncOffset" value="0" step="0.1" class="tag-input" style="width:70px"> ث
+          </label>
+        </div>
+
+        <!-- Comparison Stats -->
+        <div class="compare-stats-grid">
+          <div class="card">
+            <div class="card__header"><h3>مقارنة الإحصائيات</h3></div>
+            <table class="data-table compare-table">
+              <thead><tr><th>الفيديو A</th><th>المقياس</th><th>الفيديو B</th></tr></thead>
+              <tbody>
+                <tr><td class="better">34</td><td>هجمات</td><td>27</td></tr>
+                <tr><td>84%</td><td>دقة التمرير</td><td class="better">88%</td></tr>
+                <tr><td class="better">3</td><td>أهداف</td><td>1</td></tr>
+                <tr><td>18</td><td>أخطاء</td><td class="better">14</td></tr>
+                <tr><td class="better">62%</td><td>الاستحواذ</td><td>38%</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card">
+            <div class="card__header"><h3>مقارنة بيانية</h3></div>
+            <canvas id="compareChart" width="320" height="200"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==============================
+         VIEW 7: SQUAD & TEAMS MANAGER
+    =============================== -->
+    <section class="view" id="view-squad">
+      <div class="squad-layout">
+
+        <!-- Header -->
+        <div class="squad-header">
+          <div>
+            <h2>🛡️ استوديو إدارة الفرق وقائمة اللاعبين</h2>
+            <p style="color:var(--text-muted); font-size:0.86rem; margin-top:3px;">
+              إدارة شعارات وهوية الفريقين، صور وبطاقات اللاعبين، وربطها التلقائي باللوحة التكتيكية ومحلل الفيديو وتقارير الـ PDF
+            </p>
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn btn--primary" id="addNewPlayerBtn">+ إضافة لاعب جديد</button>
+            <button class="btn btn--ghost" id="resetDefaultSquadBtn" title="استعادة التشكيلة النموذجية">🔄 استعادة التشكيلة النموذجية</button>
+          </div>
+        </div>
+
+        <!-- Dual Clubs Box (Home & Away) -->
+        <div class="clubs-dual-grid">
+          <!-- Home Club Card -->
+          <div class="club-card" style="--team-color: var(--accent);">
+            <div class="club-logo-box" title="انقر لرفع شعار الفريق المضيف (PNG / JPG)">
+              <div id="homeLogoPreview"></div>
+              <input type="file" id="homeLogoUpload" accept="image/*">
+            </div>
+            <div class="club-info-fields">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:0.75rem; color:var(--accent); font-weight:700;">الفريق المضيف (فريقنا)</span>
+                <select id="homeClubPresets" class="draw-select" style="font-size:0.75rem; padding:2px 6px;">
+                  <option value="">⚡ أندية جاهزة...</option>
+                  <option value="mca">مولودية الجزائر</option>
+                  <option value="crb">شباب بلوزداد</option>
+                  <option value="usma">اتحاد الجزائر</option>
+                  <option value="jsk">شبيبة القبائل</option>
+                  <option value="ess">وفاق سطيف</option>
+                  <option value="csc">شباب قسنطينة</option>
+                  <option value="algeria">المنتخب الوطني 🇩🇿</option>
+                </select>
+              </div>
+              <input type="text" id="homeClubName" class="tag-input" placeholder="اسم النادي (مثال: مولودية الجزائر)">
+              <div class="club-sub-row">
+                <input type="text" id="homeClubStadium" class="tag-input" placeholder="اسم الملعب الرئيسي" style="flex:1;">
+                <input type="color" id="homeClubColor" value="#10B981" title="اللون الأساسي للنادي" class="color-pick-input" style="width:36px; height:32px; border-radius:6px; cursor:pointer; background:transparent; border:1px solid var(--card-border);">
+              </div>
+            </div>
+          </div>
+
+          <!-- VS Divider -->
+          <div class="vs-badge-box">
+            <div class="vs-circle">VS</div>
+            <span class="vs-pill">المباراة القادمة</span>
+          </div>
+
+          <!-- Away Club Card -->
+          <div class="club-card" style="--team-color: #EF4444;">
+            <div class="club-logo-box" title="انقر لرفع شعار الفريق الزائر/المنافس (PNG / JPG)">
+              <div id="awayLogoPreview"></div>
+              <input type="file" id="awayLogoUpload" accept="image/*">
+            </div>
+            <div class="club-info-fields">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:0.75rem; color:#EF4444; font-weight:700;">الفريق الزائر (المنافس)</span>
+                <select id="awayClubPresets" class="draw-select" style="font-size:0.75rem; padding:2px 6px;">
+                  <option value="">⚡ أندية جاهزة...</option>
+                  <option value="crb">شباب بلوزداد</option>
+                  <option value="mca">مولودية الجزائر</option>
+                  <option value="usma">اتحاد الجزائر</option>
+                  <option value="jsk">شبيبة القبائل</option>
+                  <option value="ess">وفاق سطيف</option>
+                  <option value="csc">شباب قسنطينة</option>
+                  <option value="algeria">المنتخب الوطني 🇩🇿</option>
+                </select>
+              </div>
+              <input type="text" id="awayClubName" class="tag-input" placeholder="اسم النادي المنافس">
+              <div class="club-sub-row">
+                <input type="text" id="awayClubStadium" class="tag-input" placeholder="المدينة / المنشأ" style="flex:1;">
+                <input type="color" id="awayClubColor" value="#EF4444" title="اللون الأساسي للمنافس" class="color-pick-input" style="width:36px; height:32px; border-radius:6px; cursor:pointer; background:transparent; border:1px solid var(--card-border);">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Roster Controls & Filters Bar -->
+        <div class="roster-controls-bar">
+          <div class="roster-filter-tabs">
+            <button class="roster-tab-btn active" data-filter="all">الكل</button>
+            <button class="roster-tab-btn" data-filter="starters">⭐ الأساسيون (Starting XI)</button>
+            <button class="roster-tab-btn" data-filter="bench">البدلاء (Bench)</button>
+            <button class="roster-tab-btn" data-filter="GK">حراس المرمى (GK)</button>
+            <button class="roster-tab-btn" data-filter="DEF">الدفاع (DEF)</button>
+            <button class="roster-tab-btn" data-filter="MID">الوسط (MID)</button>
+            <button class="roster-tab-btn" data-filter="FWD">الهجوم (FWD)</button>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <input type="text" id="searchPlayerInput" class="search-input" placeholder="بحث بالاسم أو الرقم..." style="max-width:220px;">
+            <span id="squadCounterBadge" style="font-size:0.78rem; color:var(--text-muted); font-weight:600;">15 لاعب</span>
+          </div>
+        </div>
+
+        <!-- Squad Player Cards Grid -->
+        <div class="squad-grid" id="squadGridContainer">
+          <!-- Dynamically populated by squad-manager.js -->
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==============================
+         VIEW 7: HEATMAP & TOUCHMAP STUDIO
+    =============================== -->
+    <section class="view" id="view-heatmap">
+      <div class="heatmap-layout">
+        <!-- Sidebar Controls -->
+        <aside class="heatmap-sidebar">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <h3 style="margin:0; font-size:1.1rem; color:var(--text);">🔥 التحليل الحراري</h3>
+            <span class="badge" style="background:rgba(0,212,255,0.15); color:var(--accent); font-size:0.75rem; padding:2px 8px; border-radius:12px;">v2.5 Pro</span>
+          </div>
+          <p style="font-size:0.8rem; color:var(--text-muted); margin:0; line-height:1.4;">
+            خريطة التوزيع والانتشار واللمسات ومناطق الضغط التكتيكي ومخطط التسديدات (xG).
+          </p>
+
+          <!-- Team & Player Selector -->
+          <div class="form-group">
+            <label style="font-size:0.8rem; color:var(--text-muted);">الفريق المستهدف:</label>
+            <select id="hmTeamSelect" class="sport-select" style="width:100%; font-size:0.85rem;">
+              <option value="home">🔴 الفريق المضيف</option>
+              <option value="away">🔵 الفريق الزائر</option>
+              <option value="both">⚡ كلا الفريقين (المباراة كاملة)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label style="font-size:0.8rem; color:var(--text-muted);">اللاعب المحدد:</label>
+            <select id="hmPlayerSelect" class="sport-select" style="width:100%; font-size:0.85rem;">
+              <option value="all">⭐ كامل الفريق (All Players)</option>
+            </select>
+          </div>
+
+          <!-- Slider: Radius -->
+          <div class="hm-slider-group">
+            <label>
+              <span>نصف قطر التوهج (Radius):</span>
+              <strong id="hmRadiusVal" style="color:var(--accent);">45px</strong>
+            </label>
+            <input type="range" id="hmRadiusSlider" min="20" max="80" value="45" style="width:100%; accent-color:var(--accent);">
+          </div>
+
+          <!-- Slider: Intensity -->
+          <div class="hm-slider-group">
+            <label>
+              <span>كثافة الحرارة (Intensity):</span>
+              <strong id="hmIntensityVal" style="color:var(--accent);">65%</strong>
+            </label>
+            <input type="range" id="hmIntensitySlider" min="0.2" max="1.0" step="0.05" value="0.65" style="width:100%; accent-color:var(--accent);">
+          </div>
+
+          <!-- Stats Box -->
+          <div class="hm-stats-box">
+            <div>📍 إجمالي النقاط المسجلة: <strong id="hmPointsCount" style="color:var(--accent);">0</strong></div>
+            <div id="hmShotStats" style="display:flex; flex-direction:column; gap:2px; font-size:0.78rem; color:var(--text-muted);"></div>
+          </div>
+
+          <!-- Presets -->
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <label style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">⚡ نماذج تكتيكية جاهزة:</label>
+            <div class="hm-preset-list">
+              <button class="hm-preset-btn" data-preset="preset-right-wing">🏃 زيادة عددية بالجناح الأيمن (Overload)</button>
+              <button class="hm-preset-btn" data-preset="preset-central-mid">⚽ صانع ألعاب وبناء لعب مركزي</button>
+              <button class="hm-preset-btn" data-preset="preset-high-press">🔴 ضغط عالي وافتكاك في ملعب الخصم</button>
+              <button class="hm-preset-btn" data-preset="preset-gk-box">🧤 تغطية حارس المرمى لمنطقة الجزاء</button>
+              <button class="hm-preset-btn" data-preset="preset-shotmap">🎯 خريطة تسديدات هجومية كاملة (xG)</button>
+            </div>
+          </div>
+
+          <!-- Bottom Actions -->
+          <div style="display:flex; flex-direction:column; gap:8px; margin-top:auto;">
+            <button class="btn btn--accent" id="hmAnalyzeWithAiBtn" style="font-size:0.85rem;">🤖 تحليل الخريطة بالمساعد الذكي</button>
+            <div style="display:flex; gap:6px;">
+              <button class="btn btn--primary" id="hmExportBtn" style="flex:1; font-size:0.8rem;">📥 تصدير HD</button>
+              <button class="btn btn--ghost" id="hmClearBtn" style="flex:1; font-size:0.8rem;">🗑️ مسح</button>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Main Pitch Canvas Area -->
+        <main class="heatmap-main">
+          <div class="heatmap-header">
+            <div class="hm-mode-group">
+              <button class="hm-mode-btn active" data-mode="heatmap">🔥 خريطة الكثافة الحرارية</button>
+              <button class="hm-mode-btn" data-mode="touchmap">📍 خريطة اللمسات والتمرير</button>
+              <button class="hm-mode-btn" data-mode="shotmap">🎯 خريطة التسديدات و xG</button>
+              <button class="hm-mode-btn" data-mode="pressure">🛡️ مناطق الضغط واسترجاع الكرة</button>
+            </div>
+            <div style="font-size:0.82rem; color:var(--text-muted); display:flex; align-items:center; gap:8px;">
+              <span>💡 انقر أو اسحب الفأرة على الملعب لإضافة نقاط وتحديد مسارات التحرك</span>
+            </div>
+          </div>
+
+          <div class="heatmap-canvas-container">
+            <canvas id="heatmapCanvas" width="840" height="520"></canvas>
+          </div>
+        </main>
+      </div>
+    </section>
+
+    <!-- ==============================
+         VIEW 8: AI TACTICAL ASSISTANT
+    =============================== -->
+    <section class="view" id="view-ai">
+      <div class="ai-assistant-layout">
+        <!-- Sidebar: KPI Gauge & Quick Prompts -->
+        <aside class="ai-sidebar">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <h3 style="margin:0; font-size:1.1rem; color:var(--text);">🤖 المساعد التكتيكي الذكي</h3>
+            <span class="badge" style="background:rgba(6,214,160,0.15); color:#06D6A0; font-size:0.75rem; padding:2px 8px; border-radius:12px;">محلل معتمد</span>
+          </div>
+          <p style="font-size:0.8rem; color:var(--text-muted); margin:0; line-height:1.4;">
+            تحليل ذكي فوري لمجريات اللقاء وتوجيهات عملية للمدرب والطاقم الفني.
+          </p>
+
+          <!-- Match Dominance Gauge -->
+          <div class="ai-dominance-box" id="aiMatchDominanceGauge">
+            <!-- Populated dynamically by ai-assistant.js -->
+          </div>
+
+          <!-- Quick Tactical Analysis Buttons -->
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <label style="font-size:0.82rem; color:var(--text-muted); font-weight:700;">⚡ تقارير تحليل فورية بنقرة واحدة:</label>
+            <div class="ai-chips-container">
+              <button class="ai-chip-btn" data-prompt="audit">
+                <span>🧠</span>
+                <div style="text-align:right;">
+                  <strong>التشخيص التكتيكي الشامل</strong>
+                  <div style="font-size:0.72rem; color:var(--text-muted);">نقاط القوة والضعف والتحولات</div>
+                </div>
+              </button>
+              <button class="ai-chip-btn" data-prompt="halftime">
+                <span>⏱️</span>
+                <div style="text-align:right;">
+                  <strong>توجيهات ما بين الشوطين</strong>
+                  <div style="font-size:0.72rem; color:var(--text-muted);">محاضرة غرفة الملابس و 3 قرارات عاجلة</div>
+                </div>
+              </button>
+              <button class="ai-chip-btn" data-prompt="defense-gk">
+                <span>🧤</span>
+                <div style="text-align:right;">
+                  <strong>تحليل حراسة المرمى والدفاع</strong>
+                  <div style="font-size:0.72rem; color:var(--text-muted);">التصديات، الكرات العرضية، والخط الخلفي</div>
+                </div>
+              </button>
+              <button class="ai-chip-btn" data-prompt="formation">
+                <span>🔄</span>
+                <div style="text-align:right;">
+                  <strong>اقتراح تعديل الرسم التكتيكي</strong>
+                  <div style="font-size:0.72rem; color:var(--text-muted);">الانتقال من 4-3-3 إلى 4-2-3-1</div>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Integrated Export Actions -->
+          <div style="display:flex; flex-direction:column; gap:6px; margin-top:auto;">
+            <button class="btn btn--primary" id="aiSendToPdfBtn" style="font-size:0.85rem;">
+              📄 إدراج في تقرير المباراة الرسمي (PDF)
+            </button>
+            <div style="display:flex; gap:6px;">
+              <button class="btn btn--ghost" id="aiCopyInsightBtn" style="flex:1; font-size:0.8rem;">📋 نسخ</button>
+              <button class="btn btn--ghost" id="aiDownloadInsightBtn" style="flex:1; font-size:0.8rem;">📥 تنزيل MD</button>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Main Chat & Output Area -->
+        <main class="ai-main-chat">
+          <div class="ai-chat-header">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:1.2rem;">💬</span>
+              <div>
+                <strong style="color:var(--text); font-size:0.95rem;">غرفة الحوار والتحليل التكتيكي الفوري</strong>
+                <div style="font-size:0.75rem; color:#06D6A0;">● متصل ومستعد لتحليل كافة سيناريوهات اللقاء</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ai-chat-messages" id="aiChatMessages">
+            <!-- Messages populated by ai-assistant.js -->
+          </div>
+
+          <div class="ai-chat-input-bar">
+            <form class="ai-input-form" id="aiChatForm">
+              <input type="text" id="aiChatInput" class="ai-input-box" placeholder="اطرح سؤالاً تكتيكياً على المساعد الذكي (مثال: كيف نعالج بطء ارتداد الأظهرة؟)...">
+              <button type="submit" class="btn btn--primary">إرسال ➔</button>
+            </form>
+          </div>
+        </main>
+      </div>
+    </section>
+
+    <!-- ==============================
+         VIEW 9: ABOUT FOUNDER
+    =============================== -->
+    <section class="view" id="view-about">
+      <div class="about-view-wrapper">
+        <div class="about-hero-card">
+          <div class="about-avatar-wrapper">
+            <img src="assets/icons/houari-benabdallah.jpg" alt="الهواري بن عبد الله" class="about-avatar-img" onerror="this.src=''; this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div style="display:none; width:100%; height:100%; border-radius:50%; background:linear-gradient(135deg, #00D4FF, #0070CC); align-items:center; justify-content:center; font-size:3rem; color:#fff;">🏅</div>
+            <div class="about-badge-flag" title="الجمهورية الجزائرية الديمقراطية الشعبية">🇩🇿</div>
+          </div>
+
+          <h1 class="about-name">الكابتن الهواري بن عبد الله</h1>
+          <div class="about-title">مؤسس ومطور منصة «تحليل DZ» (Tahleel DZ)</div>
+          <div style="font-size:0.92rem; color:var(--text-muted); margin-top:4px;">
+            تكنولوجيا تحليل الأداء الرياضي المتطورة — مستوحاة من كبرى المنصات العالمية (Dartfish · LiveTag Pro · Once Sport)
+          </div>
+
+          <!-- Roles Grid -->
+          <div class="about-grid-cards">
+            <div class="about-role-card">
+              <div class="about-role-icon">🏃</div>
+              <div class="about-role-title">مربي رياضي</div>
+              <div style="font-size:0.78rem; color:var(--text-muted); margin-top:4px;">إعداد بدني وتربوي للفرق والناشئين</div>
+            </div>
+            <div class="about-role-card">
+              <div class="about-role-icon">🧤</div>
+              <div class="about-role-title">مدرب حراس مرمى</div>
+              <div style="font-size:0.78rem; color:var(--text-muted); margin-top:4px;">تطوير المهارات التخصصية للحراس</div>
+            </div>
+            <div class="about-role-card">
+              <div class="about-role-icon">📊</div>
+              <div class="about-role-title">محلل أداء رياضي</div>
+              <div style="font-size:0.78rem; color:var(--text-muted); margin-top:4px;">تحليل الفيديو والمؤشرات التكتيكية</div>
+            </div>
+            <div class="about-role-card">
+              <div class="about-role-icon">💻</div>
+              <div class="about-role-title">مطور برمجيات رياضية</div>
+              <div style="font-size:0.78rem; color:var(--text-muted); margin-top:4px;">هندسة منصات الفيديو التفاعلية والذكاء الاصطناعي</div>
+            </div>
+          </div>
+
+          <!-- Bio & Vision -->
+          <div class="about-bio-card">
+            <h3 style="color:var(--accent); margin:0 0 12px 0; font-size:1.15rem;">🏅 مسيرة مهنية وخبرة ميدانية في خدمة الرياضة الجزائرية</h3>
+            <p>
+              مربٍّ رياضي ومدرب جزائري متعدد التخصصات، يجمع بين الممارسة الميدانية الحية في تدريب حراس المرمى وتحليل الأداء الفني في ملاعب كرة القدم، وبين الشغف العميق بتطوير البرمجيات الرياضية الحديثة.
+            </p>
+            <p>
+              كان ضمن الطاقم الفني والتقني في استحقاقات وطنية وقارية بارزة، من أهمها:
+              <strong style="color:#06D6A0;">بطولة أفريقيا لكرة القدم المدرسية — UNAF الجزائر 2025</strong>.
+            </p>
+
+            <div class="about-quote">
+              "إن تطوير كرة القدم الحديثة لم يعد مجرد تدريب بدني، بل أصبح علماً دقيقاً يعتمد على تفكيك تفاصيل الفيديو، رصد التحركات التكتيكية بالذكاء الاصطناعي، وتقديم المعلومة الدقيقة للمدرب في اللحظة المناسبة لحسم المباريات."
+            </div>
+
+            <p style="margin-bottom:0;">
+              تم تصميم وبرمجة منصة <strong style="color:var(--accent);">تحليل DZ</strong> لتكون الأداة الجزائرية والعربية الأولى المتكاملة التي تلبي احتياجات المدرب، المحلل، وإدارة الأندية بمواصفات عالمية، مع الاستغناء التام عن البرمجيات الأجنبية باهظة التكلفة.
+            </p>
+          </div>
+
+          <!-- Official Sign-off -->
+          <div style="margin-top:24px; padding-top:16px; border-top:1px solid var(--card-border); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+            <div style="text-align:right;">
+              <div style="font-size:0.8rem; color:var(--text-muted);">المؤسس والمطور:</div>
+              <strong style="font-size:1.1rem; color:var(--text);">الهواري بن عبد الله</strong>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <button class="btn btn--primary" onclick="switchView('analyzer')">📹 الانتقال لمحلل الفيديو</button>
+              <button class="btn btn--accent" onclick="switchView('heatmap')">🔥 استعراض التحليل الحراري</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Toast Notifications -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Import Video Modal -->
+  <div class="modal-overlay" id="importModal" style="display:none">
+    <div class="modal">
+      <div class="modal__header">
+        <h3>استيراد فيديو جديد</h3>
+        <button class="modal__close" id="closeImportModal">✕</button>
+      </div>
+      <div class="modal__body">
+        <div class="form-group">
+          <label>اسم المباراة</label>
+          <input type="text" class="tag-input" placeholder="مثال: نهائي الدوري 2024" style="width:100%">
+        </div>
+        <div class="form-group">
+          <label>الرياضة</label>
+          <select class="sport-select" style="width:100%">
+            <option>كرة القدم</option>
+            <option>كرة السلة</option>
+            <option>كرة اليد</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>الفريق الأول</label>
+          <input type="text" class="tag-input" placeholder="الفريق أ" style="width:100%">
+        </div>
+        <div class="form-group">
+          <label>الفريق الثاني</label>
+          <input type="text" class="tag-input" placeholder="الفريق ب" style="width:100%">
+        </div>
+        <div class="form-group">
+          <label>ملف الفيديو</label>
+          <div class="upload-zone mini" onclick="document.getElementById('modalVideoInput').click()">
+            <input type="file" id="modalVideoInput" accept="video/*" style="display:none">
+            <span>اضغط لاختيار ملف</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--primary">استيراد وبدء التحليل</button>
+        <button class="btn btn--ghost" id="cancelImportBtn">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Save Tactical Plan Modal -->
+  <div class="modal-overlay" id="savePlanModal" style="display:none">
+    <div class="modal" style="max-width: 480px;">
+      <div class="modal__header">
+        <h3>💾 حفظ الخطة التكتيكية / التمرين</h3>
+        <button class="modal__close" id="closeSavePlanModal">✕</button>
+      </div>
+      <div class="modal__body">
+        <div class="form-group">
+          <label>اسم الخطة / التمرين</label>
+          <input type="text" id="modalPlanName" class="tag-input" placeholder="مثال: تمرين الضغط العالي 4-3-3" style="width:100%">
+        </div>
+        <div class="form-group">
+          <label>اسم المدرب / المحلل</label>
+          <input type="text" id="modalCoachName" class="tag-input" placeholder="مثال: كابتن هواري" style="width:100%">
+        </div>
+        <div class="form-group">
+          <label>ملاحظات وتعليمات تكتيكية</label>
+          <textarea id="modalPlanNotes" class="tag-input" rows="3" placeholder="اكتب تعليمات التمرين، توجيهات التمركز، أو أهداف الحصة التدريبية..." style="width:100%; resize:vertical;"></textarea>
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--primary" id="confirmSavePlanBtn">💾 حفظ في المكتبة</button>
+        <button class="btn btn--ghost" id="cancelSavePlanBtn">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tactical Plans & Drills Library Modal -->
+  <div class="modal-overlay" id="tacticalPlansModal" style="display:none">
+    <div class="modal" style="max-width: 780px;">
+      <div class="modal__header">
+        <h3>📂 مكتبة الخطط والتمارين التدريبية</h3>
+        <button class="modal__close" id="closePlansLibraryModal">✕</button>
+      </div>
+      <div class="modal__body">
+        <!-- Tabs for Library -->
+        <div style="display:flex; gap:10px; margin-bottom:14px; border-bottom:1px solid var(--card-border); padding-bottom:8px;">
+          <button class="btn btn--sm btn--primary" id="tabSavedPlansBtn">📋 خططي المحفوظة (<span id="savedPlansCount">0</span>)</button>
+          <button class="btn btn--sm btn--ghost" id="tabPresetDrillsBtn">⚡ تمارين ونماذج تكتيكية جاهزة</button>
+        </div>
+
+        <!-- Container for Saved Plans -->
+        <div id="savedPlansContainer">
+          <div class="plans-grid" id="savedPlansList">
+            <!-- Dynamically populated -->
+          </div>
+          <div id="noSavedPlansMsg" style="display:none; text-align:center; padding:30px; color:var(--text-muted);">
+            <div style="font-size:2rem; margin-bottom:8px;">📭</div>
+            <p>لا توجد خطط محفوظة حالياً. يمكنك تصميم خطة وحفظها بسهولة!</p>
+          </div>
+        </div>
+
+        <!-- Container for Preset Drills -->
+        <div id="presetDrillsContainer" style="display:none;">
+          <div class="plans-grid" id="presetDrillsList">
+            <!-- Dynamically populated preset drills -->
+          </div>
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--ghost" id="closeLibraryFooterBtn">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Export Video Clip Modal -->
+  <div class="modal-overlay" id="exportClipModal" style="display:none">
+    <div class="modal" style="max-width: 520px;">
+      <div class="modal__header">
+        <h3>🎥 تصدير لقطة فيديو مدمجة بالرسومات التكتيكية</h3>
+        <button class="modal__close" id="closeExportClipModal">✕</button>
+      </div>
+      <div class="modal__body">
+        <p style="font-size:0.86rem; color:var(--text-muted); line-height:1.5; margin-bottom:14px;">
+          سيقوم التطبيق بتشغيل اللقطة وتسجيلها مدمجاً معها كشافات الضوء، الأسهم، والحلقات التكتيكية التي رسمتها وتنزيلها كملف فيديو لمشاركتها عبر واتساب أو العرض في غرفة الملابس.
+        </p>
+        <div class="form-group">
+          <label>مدة اللقطة المراد تسجيلها وتصديرها:</label>
+          <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
+            <button class="btn btn--sm btn--ghost clip-dur-btn" data-dur="5">⚡ 5 ثوانٍ</button>
+            <button class="btn btn--sm btn--primary clip-dur-btn active" data-dur="10">🔥 10 ثوانٍ (موصى به)</button>
+            <button class="btn btn--sm btn--ghost clip-dur-btn" data-dur="15">⏱️ 15 ثانية</button>
+            <button class="btn btn--sm btn--ghost clip-dur-btn" data-dur="0">🔴 تسجيل يدوي (حر)</button>
+          </div>
+        </div>
+        <div class="form-group" style="margin-top:14px;">
+          <label>عنوان اللقطة التكتيكية (شريط أسفل الفيديو):</label>
+          <input type="text" id="clipWatermarkText" class="tag-input" placeholder="مثال: تحليل التحول الهجومي السريع والضغط" style="width:100%">
+        </div>
+        <div class="form-group" style="display:flex; align-items:center; gap:8px; margin-top:12px;">
+          <input type="checkbox" id="includeWatermarkCheck" checked style="cursor:pointer; width:16px; height:16px;">
+          <label for="includeWatermarkCheck" style="cursor:pointer; font-size:0.84rem; color:var(--text-muted);">إضافة شريط "تحليل DZ 🇩🇿" وتوقيت المباراة الاحترافي أسفل الفيديو</label>
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--primary" id="startRecordingClipBtn">▶ بدء التسجيل والتصدير الآن</button>
+        <button class="btn btn--ghost" id="cancelExportClipBtn">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Save Trimmed Clip Modal -->
+  <div class="modal-overlay" id="saveClipModal" style="display:none">
+    <div class="modal" style="max-width: 500px;">
+      <div class="modal__header">
+        <h3>✂️ حفظ اللقطة المقصوصة في قائمة المقاطع</h3>
+        <button class="modal__close" id="closeSaveClipModal">✕</button>
+      </div>
+      <div class="modal__body">
+        <div class="form-group">
+          <label>اسم / عنوان اللقطة:</label>
+          <input type="text" id="newClipTitleInput" class="tag-input" placeholder="مثال: ضغط عكسي واسترجاع الكرة" style="width:100%">
+        </div>
+        <div class="form-group" style="margin-top:12px;">
+          <label>نوع الحدث / التاغ:</label>
+          <select id="newClipCategorySelect" class="sport-select" style="width:100%">
+            <option value="هجوم">⚽ هجوم منظم</option>
+            <option value="هجمة مضادة">⚡ هجمة مضادة سريعة</option>
+            <option value="تسديدة">🎯 تسديدة على المرمى</option>
+            <option value="هدف">🔥 هدف</option>
+            <option value="دفاع">🛡️ موقف دفاعي</option>
+            <option value="ضغط">🔴 ضغط عالي واسترجاع</option>
+            <option value="تسلل">📐 حالة تسلل (VAR)</option>
+            <option value="كرات ثابتة">🚩 ركلة حرة / ركنية</option>
+            <option value="أخطاء">⚠️ خطأ تكتيكي</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-top:12px;">
+          <label>ملاحظة فنية للمدرب أو اللاعبين:</label>
+          <textarea id="newClipNoteInput" class="tag-input" rows="3" placeholder="اكتب توجيهاتك الفنية حول هذه اللقطة (مثال: تأخر في التغطية العكسية، كان يجب التمرير مبكراً)" style="width:100%; resize:vertical;"></textarea>
+        </div>
+        <div class="form-group" style="margin-top:12px;">
+          <label>نطاق التوقيت المحدد:</label>
+          <div style="background:var(--bg-3); padding:8px 12px; border-radius:6px; font-family:monospace; font-size:0.9rem; color:var(--accent);" id="newClipTimeRangePreview">
+            0:00.0 ➔ 0:10.0 (المدة: 10.0 ثانية)
+          </div>
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--primary" id="confirmSaveClipBtn">💾 حفظ اللقطة في القائمة</button>
+        <button class="btn btn--ghost" id="cancelSaveClipBtn">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Official Match Analysis PDF Report Generator Modal -->
+  <div class="modal-overlay" id="pdfReportModal" style="display:none">
+    <div class="modal" style="max-width: 640px; max-height:90vh; overflow-y:auto;">
+      <div class="modal__header">
+        <h3>📄 إنشاء وتصدير تقرير المباراة الفني الرسمي (PDF)</h3>
+        <button class="modal__close" id="closePdfReportModal">✕</button>
+      </div>
+      <div class="modal__body">
+        <p style="font-size:0.86rem; color:var(--text-muted); line-height:1.5;">
+          يولد النظام وثيقة فنية احترافية متعددة الصفحات مجهزة للطباعة أو الحفظ كـ <strong>PDF رسمي</strong> يتضمن بيانات المباراة، الإحصائيات، ومخطط اللوحة التكتيكية، وجدول اللقطات المقصوصة مع ملاحظات المدرب واعتماد الطاقم الفني.
+        </p>
+
+        <!-- Match Info Form Grid -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:8px;">
+          <div class="form-group">
+            <label>البطولة / المنافسة:</label>
+            <input type="text" id="rptCompetition" class="tag-input" value="نهائي كأس الجزائر — 2026">
+          </div>
+          <div class="form-group">
+            <label>تاريخ المباراة:</label>
+            <input type="date" id="rptMatchDate" class="tag-input">
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:2fr 1fr 2fr 1fr; gap:8px; margin-top:8px;">
+          <div class="form-group">
+            <label>الفريق المضيف:</label>
+            <input type="text" id="rptHomeTeam" class="tag-input" value="مولودية الجزائر">
+          </div>
+          <div class="form-group">
+            <label>الأهداف:</label>
+            <input type="text" id="rptHomeScore" class="tag-input" value="2" style="text-align:center;">
+          </div>
+          <div class="form-group">
+            <label>الفريق الضيف:</label>
+            <input type="text" id="rptAwayTeam" class="tag-input" value="شباب بلوزداد">
+          </div>
+          <div class="form-group">
+            <label>الأهداف:</label>
+            <input type="text" id="rptAwayScore" class="tag-input" value="1" style="text-align:center;">
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:8px;">
+          <div class="form-group">
+            <label>اسم المدير الفني (Head Coach):</label>
+            <input type="text" id="rptCoachName" class="tag-input" value="الكوتش: حسام الدين">
+          </div>
+          <div class="form-group">
+            <label>محلل الأداء (Performance Analyst):</label>
+            <input type="text" id="rptAnalystName" class="tag-input" value="المحلل: بن عبد الله هواري">
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top:8px;">
+          <label>مكان المباراة / الملعب:</label>
+          <input type="text" id="rptVenue" class="tag-input" value="ملعب 5 جويلية 1962 — الجزائر العاصمة">
+        </div>
+
+        <div class="form-group" style="margin-top:8px;">
+          <label>الملخص التكتيكي التنفيذي للمدرب:</label>
+          <textarea id="rptSummaryText" class="tag-input" rows="2" style="resize:vertical;">أظهر الفريق تنظيماً تكتيكياً فعالاً في التحول الهجومي السريع والضغط العالي في الثلث الهجومي. يجب مواصلة العمل على تضييق المساحات بين الخطوط وإحكام التغطية العكسية عند الكرات الثابتة.</textarea>
+        </div>
+
+        <!-- Sections Checkboxes -->
+        <div class="form-group" style="margin-top:12px; background:var(--bg-3); padding:10px 14px; border-radius:8px;">
+          <label style="color:var(--accent); font-weight:700; margin-bottom:6px;">عناصر التقرير المضمنة في الوثيقة:</label>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:0.84rem;">
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+              <input type="checkbox" id="rptIncCover" checked> صفحة غلاف ولوحة النتيجة
+            </label>
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+              <input type="checkbox" id="rptIncKpis" checked> مؤشرات الأداء الإحصائية (KPIs)
+            </label>
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+              <input type="checkbox" id="rptIncCharts" checked> مخططات الرادار والأحداث
+            </label>
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+              <input type="checkbox" id="rptIncTactical" checked> لقطة اللوحة التكتيكية والتشكيلة
+            </label>
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+              <input type="checkbox" id="rptIncHeatmap" checked> لقطة التحليل الحراري وخريطة التسديدات
+            </label>
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+              <input type="checkbox" id="rptIncClips" checked> سجل اللقطات المقصوصة
+            </label>
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+              <input type="checkbox" id="rptIncNotes" checked> توصيات الطاقم الفني
+            </label>
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer; grid-column:span 2;">
+              <input type="checkbox" id="rptIncSignatures" checked> خانة اعتماد وتوقيع الإدارة الفنية
+            </label>
+          </div>
+          <div style="margin-top:8px; font-size:0.78rem; color:var(--text-muted);" id="rptClipCountBadge">
+            جاري تحضير المقاطع التكتيكية...
+          </div>
+        </div>
+
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--primary" id="generateAndPrintPdfBtn">🖨️ طباعة وحفظ التقرير (Print / Save as PDF)</button>
+        <button class="btn btn--ghost" id="downloadHtmlReportBtn" title="تنزيل ملف HTML جاهز للطباعة بدون إنترنت">📥 تنزيل الوثيقة</button>
+        <button class="btn btn--ghost" id="cancelPdfReportBtn">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Player Modal -->
+  <div class="modal-overlay" id="playerModal" style="display:none">
+    <div class="modal" style="max-width: 500px;">
+      <div class="modal__header">
+        <h3 id="playerModalTitle">➕ إضافة لاعب جديد للقائمة</h3>
+        <button class="modal__close" id="closePlayerModal">✕</button>
+      </div>
+      <div class="modal__body">
+        <!-- Photo Upload Row -->
+        <div style="display:flex; align-items:center; gap:16px;">
+          <div style="width:70px; height:70px; border-radius:50%; background:var(--bg-3); border:2px dashed var(--card-border); overflow:hidden; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+            <img id="playerPhotoPreview" src="" alt="صورة اللاعب" style="width:100%; height:100%; object-fit:cover; display:none;">
+            <span style="font-size:1.5rem;">👤</span>
+          </div>
+          <div style="flex:1;">
+            <label style="font-size:0.8rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">صورة اللاعب الشخصية:</label>
+            <input type="file" id="playerPhotoUpload" accept="image/*" class="tag-input" style="padding:4px; font-size:0.8rem; width:100%;">
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:3fr 1fr; gap:10px; margin-top:10px;">
+          <div class="form-group">
+            <label>اسم اللاعب الكامل:</label>
+            <input type="text" id="modalPlayerName" class="tag-input" placeholder="مثال: يوسف بلايلي">
+          </div>
+          <div class="form-group">
+            <label>رقم القميص:</label>
+            <input type="number" id="modalPlayerNum" class="tag-input" value="10" min="1" max="99" style="text-align:center;">
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:8px;">
+          <div class="form-group">
+            <label>المركز التكتيكي:</label>
+            <select id="modalPlayerPos" class="sport-select" style="width:100%;">
+              <option value="GK">🧤 حارس مرمى (GK)</option>
+              <option value="CB">🛡️ قلب دفاع (CB)</option>
+              <option value="LB">🏃 ظهير أيسر (LB)</option>
+              <option value="RB">🏃 ظهير أيمن (RB)</option>
+              <option value="CDM">⚓ وسط ارتكاز (CDM)</option>
+              <option value="CM" selected>⚙️ وسط ميدان (CM)</option>
+              <option value="CAM">🎩 صانع ألعاب (CAM)</option>
+              <option value="RW">⚡ جناح أيمن (RW)</option>
+              <option value="LW">⚡ جناح أيسر (LW)</option>
+              <option value="ST">🎯 رأس حربة (ST)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>القدم المفضلة:</label>
+            <select id="modalPlayerFoot" class="sport-select" style="width:100%;">
+              <option value="يمنى">👟 القدم اليمنى</option>
+              <option value="يسرى">👟 القدم اليسرى</option>
+              <option value="كلتاهما">👟 كلتا القدمين</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:8px;">
+          <div class="form-group">
+            <label>العمر:</label>
+            <input type="number" id="modalPlayerAge" class="tag-input" placeholder="مثال: 26">
+          </div>
+          <div class="form-group">
+            <label>الطول (سم):</label>
+            <input type="number" id="modalPlayerHeight" class="tag-input" placeholder="مثال: 182">
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top:8px; display:flex; align-items:center; gap:8px;">
+          <input type="checkbox" id="modalPlayerStarter" checked style="width:16px; height:16px; cursor:pointer;">
+          <label for="modalPlayerStarter" style="cursor:pointer; font-size:0.86rem; color:var(--text);">لاعب أساسي في التشكيلة (Starting XI)</label>
+        </div>
+
+        <div class="form-group" style="margin-top:8px;">
+          <label>ملاحظة فنية للمدرب:</label>
+          <input type="text" id="modalPlayerNote" class="tag-input" placeholder="مثال: مهارة في المراوغة، يحتاج لتحسين التغطية الدفاعية">
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--primary" id="savePlayerBtn">💾 حفظ اللاعب</button>
+        <button class="btn btn--ghost" id="cancelPlayerBtn">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/video-player.js"></script>
+  <script src="assets/js/tagging.js"></script>
+  <script src="assets/js/tactical-board.js"></script>
+  <script src="assets/js/charts.js"></script>
+  <script src="assets/js/compare.js"></script>
+  <script src="assets/js/squad-manager.js"></script>
+  <script src="assets/js/heatmap.js"></script>
+  <script src="assets/js/ai-assistant.js"></script>
+  <script src="assets/js/report-pdf.js"></script>
+</body>
+</html>
