@@ -5,13 +5,40 @@
 
 'use strict';
 
+function readStoredValue(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw === null ? fallback : JSON.parse(raw);
+  } catch {
+    return fallback;
+  }
+}
+
+function readStoredArray(key) {
+  const value = readStoredValue(key, []);
+  return Array.isArray(value) ? value.filter(item => item && typeof item === 'object') : [];
+}
+
+function writeStoredValue(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    showToast('تعذّر الحفظ في المتصفح؛ التغييرات متاحة في هذه الصفحة فقط', 'error');
+  }
+}
+
+function getStoredTheme() {
+  try { return localStorage.getItem('spa-theme') || 'dark'; }
+  catch { return 'dark'; }
+}
+
 // ── Global App State ──────────────────────────────────────
 window.AppState = {
   currentView: 'dashboard',
-  theme: localStorage.getItem('spa-theme') || 'dark',
-  tags: JSON.parse(localStorage.getItem('spa-tags') || '[]'),
-  sessions: JSON.parse(localStorage.getItem('spa-sessions') || '[]'),
-  tagTypes: JSON.parse(localStorage.getItem('spa-tagTypes') || 'null') || getDefaultTagTypes(),
+  theme: getStoredTheme(),
+  tags: readStoredArray('spa-tags'),
+  sessions: readStoredArray('spa-sessions'),
+  tagTypes: readStoredValue('spa-tagTypes', null) || getDefaultTagTypes(),
   stats: {
     matches: 0,
     totalTags: 0,
@@ -80,7 +107,9 @@ document.addEventListener('DOMContentLoaded', () => {
   initDashboardStats();
   initImportModal();
   initKeyboardShortcuts();
-  renderTagPanel('soccer');
+  renderTagPanel(document.getElementById('sportSelect')?.value || 'soccer');
+  AppState.tags.filter(tag => !tag.live && Number.isFinite(tag.time)).forEach(addTagToLog);
+  refreshTagCount();
   updateDashboardCounters();
 });
 
@@ -148,38 +177,47 @@ function renderTagPanel(sport) {
   const grid = document.getElementById('tagGrid');
   if (!grid) return;
 
-  grid.innerHTML = types.map(t => `
-    <button class="tag-btn"
-            data-id="${t.id}"
-            data-label="${t.label}"
-            data-color="${t.color}"
-            style="background:${t.color}"
-            onclick="recordTag('${t.id}', '${t.label}', '${t.color}')">
-      <span class="hotkey">${t.hotkey}</span>
-      ${t.label}
-    </button>
-  `).join('');
+  renderTagButtons(grid, types, recordTag);
+}
+
+function renderTagButtons(container, types, handler) {
+  container.replaceChildren(...types.map(tag => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'tag-btn';
+    button.dataset.id = tag.id;
+    button.style.background = tag.color;
+    const key = document.createElement('span');
+    key.className = 'hotkey';
+    key.textContent = tag.hotkey;
+    button.append(key, document.createTextNode(tag.label));
+    button.addEventListener('click', () => handler(tag.id, tag.label, tag.color));
+    return button;
+  }));
+}
+
+function refreshTagCount() {
+  const badge = document.getElementById('tagCount');
+  if (badge) badge.textContent = AppState.tags.length;
 }
 
 // ── Record Tag ────────────────────────────────────────────
 window.recordTag = function(id, label, color) {
   const video = document.getElementById('mainVideo');
-  const time = video && !video.paused ? video.currentTime : Date.now() / 1000;
+  const time = video && video.readyState >= 1 ? video.currentTime : 0;
   const timeStr = formatTime(time);
 
   const tag = { id, label, color, time, timeStr, ts: Date.now() };
   AppState.tags.push(tag);
-  localStorage.setItem('spa-tags', JSON.stringify(AppState.tags));
+  writeStoredValue('spa-tags', AppState.tags);
 
   // Update log
   addTagToLog(tag);
 
-  // Update count badge
-  const badge = document.getElementById('tagCount');
-  if (badge) badge.textContent = AppState.tags.length;
+  refreshTagCount();
 
   // Add to timeline if video is loaded
-  addTagToTimeline(tag, time, video ? video.duration : 90 * 60);
+  addTagToTimeline(tag, time, video?.duration);
 
   // Feedback
   flashTagButton(id);
@@ -195,11 +233,24 @@ function addTagToLog(tag) {
   const item = document.createElement('div');
   item.className = 'tag-log-item';
   item.innerHTML = `
-    <span class="tag-log-item__time">${tag.timeStr}</span>
-    <span class="tag-log-item__label" style="color:${tag.color}">${tag.label}</span>
-    <button class="tag-log-item__del" onclick="this.closest('.tag-log-item').remove()">✕</button>
+    <span class="tag-log-item__time">${escapeTagText(tag.timeStr)}</span>
+    <span class="tag-log-item__label" style="color:${safeTagColor(tag.color)}">${escapeTagText(tag.label)}</span>
+    <button class="tag-log-item__del" type="button" aria-label="حذف الوسم">✕</button>
   `;
+  item.querySelector('button').addEventListener('click', () => {
+    AppState.tags = AppState.tags.filter(entry => entry !== tag);
+    writeStoredValue('spa-tags', AppState.tags);
+    tagTimelineChips.get(tag)?.remove();
+    item.remove();
+    refreshTagCount();
+    updateDashboardCounters();
+  });
   list.insertBefore(item, list.firstChild);
+}
+
+const tagTimelineChips = new WeakMap();
+function safeTagColor(value) {
+  return /^#[0-9a-f]{6}$/i.test(value) ? value : '#00D4FF';
 }
 
 function addTagToTimeline(tag, time, duration) {
@@ -211,7 +262,7 @@ function addTagToTimeline(tag, time, duration) {
   };
   const trackId = trackMap[tag.id] || 'track-attack';
   const track = document.getElementById(trackId);
-  if (!track || !duration) return;
+  if (!track || !Number.isFinite(duration) || duration <= 0) return;
 
   const pct = Math.min((time / duration) * 100, 99.5);
   const chip = document.createElement('div');
@@ -221,10 +272,11 @@ function addTagToTimeline(tag, time, duration) {
   chip.style.background = tag.color;
   chip.title = `${tag.label} — ${tag.timeStr}`;
   track.appendChild(chip);
+  tagTimelineChips.set(tag, chip);
 }
 
 function flashTagButton(id) {
-  const btn = document.querySelector(`.tag-btn[data-id="${id}"]`);
+  const btn = [...document.querySelectorAll('.tag-btn[data-id]')].find(button => button.dataset.id === id);
   if (!btn) return;
   btn.style.transform = 'scale(.92)';
   btn.style.boxShadow = '0 0 20px rgba(255,255,255,.4)';
@@ -288,7 +340,7 @@ window.showToast = function(msg, type = 'info') {
   const toast = document.createElement('div');
   toast.className = `toast ${type}`;
   const icons = { success: '✓', error: '✕', info: 'ℹ' };
-  toast.innerHTML = `<span>${icons[type] || '•'}</span> ${msg}`;
+  toast.innerHTML = `<span>${icons[type] || '•'}</span> ${escapeTagText(msg)}`;
   container.appendChild(toast);
   setTimeout(() => {
     toast.style.opacity = '0';
@@ -346,20 +398,17 @@ function renderLiveTagButtons() {
   const container = document.getElementById('liveTagButtons');
   if (!container) return;
 
-  container.innerHTML = types.map(t => `
-    <button class="tag-btn"
-            style="background:${t.color}; min-height:56px; font-size:.95rem"
-            onclick="recordLiveTag('${t.id}','${t.label}','${t.color}')">
-      <span class="hotkey">${t.hotkey}</span>
-      ${t.label}
-    </button>
-  `).join('');
+  renderTagButtons(container, types, recordLiveTag);
+  container.querySelectorAll('button').forEach(button => {
+    button.style.minHeight = '56px';
+    button.style.fontSize = '.95rem';
+  });
 }
 
 window.recordLiveTag = function(id, label, color) {
   const timerEl = document.getElementById('liveTimer');
   const timeStr = timerEl ? timerEl.textContent : '00:00:00';
-  const tag = { id, label, color, timeStr, ts: Date.now() };
+  const tag = { id, label, color, timeStr, ts: Date.now(), live: true };
 
   const feedList = document.getElementById('eventFeedList');
   if (feedList) {
@@ -370,7 +419,7 @@ window.recordLiveTag = function(id, label, color) {
     const cls = catClass[id] || 'attack';
     item.innerHTML = `
       <span class="event-time">${timeStr}</span>
-      <span class="event-tag ${cls}" style="background:${color}22;color:${color}">${label}</span>
+      <span class="event-tag ${cls}" style="background:${safeTagColor(color)}22;color:${safeTagColor(color)}">${escapeTagText(label)}</span>
       <span class="event-player">—</span>
     `;
     feedList.insertBefore(item, feedList.firstChild);
@@ -378,7 +427,7 @@ window.recordLiveTag = function(id, label, color) {
   }
 
   AppState.tags.push(tag);
-  localStorage.setItem('spa-tags', JSON.stringify(AppState.tags));
+  writeStoredValue('spa-tags', AppState.tags);
   showToast(`▶ ${label} — ${timeStr}`, 'success');
   flashTagButton(id);
 };
@@ -390,8 +439,8 @@ function renderHotkeyMap() {
   if (!grid) return;
   grid.innerHTML = types.map(t => `
     <div class="hotkey-item">
-      <div class="hotkey-key">${t.hotkey}</div>
-      <span style="color:${t.color}">${t.label}</span>
+      <div class="hotkey-key">${escapeTagText(t.hotkey)}</div>
+      <span style="color:${safeTagColor(t.color)}">${escapeTagText(t.label)}</span>
     </div>
   `).join('');
 }
@@ -402,9 +451,9 @@ function renderTagBuilderGrid() {
   const grid = document.getElementById('tagBuilderGrid');
   if (!grid) return;
   grid.innerHTML = types.map(t => `
-    <button class="tag-btn" style="background:${t.color}; position:relative">
-      ${t.label}
-      <span class="hotkey">${t.hotkey}</span>
+    <button class="tag-btn" style="background:${safeTagColor(t.color)}; position:relative">
+      ${escapeTagText(t.label)}
+      <span class="hotkey">${escapeTagText(t.hotkey)}</span>
     </button>
   `).join('');
 }
@@ -482,13 +531,12 @@ document.addEventListener('click', e => {
 document.addEventListener('click', e => {
   if (e.target.id === 'exportTagsBtn') exportTagsCSV();
   if (e.target.id === 'exportCsvBtn') exportTagsCSV();
-  if (e.target.id === 'exportPdfBtn') showToast('جاري تصدير PDF...', 'info');
 });
 
 function exportTagsCSV() {
   const headers = ['الوقت', 'التاغ', 'الفئة'];
   const rows = AppState.tags.map(t => [t.timeStr || t.time, t.label, t.category || '']);
-  const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
+  const csv = [headers, ...rows].map(row => row.map(encodeCsvCell).join(',')).join('\r\n');
   const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -496,4 +544,16 @@ function exportTagsCSV() {
   a.click();
   URL.revokeObjectURL(url);
   showToast('تم تصدير التاغات بنجاح', 'success');
+}
+
+function encodeCsvCell(value) {
+  const text = String(value ?? '');
+  const safe = /^[\t\r\n]|^\s*[=+@-]/.test(text) ? "'" + text : text;
+  return '"' + safe.replace(/"/g, '""') + '"';
+}
+
+function escapeTagText(value) {
+  return String(value ?? '').replace(/[&<>"']/g, char => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[char]);
 }
