@@ -111,6 +111,8 @@ function buildOfficialReportHtml(data) {
   const awayLogo = window.SquadState?.awayClub?.logo;
   const squadPlayers = window.SquadState?.players || [];
 
+  const hasSecondPage = data.includeTactical || data.includeHeatmap || data.includeClips;
+
   return `
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -532,12 +534,12 @@ function buildOfficialReportHtml(data) {
 
     <div class="rep-footer">
       <span>🎯 تقرير رسمي صادر عن منصة تحليل DZ (Tahleel DZ Pro)</span>
-      <span>صفحة 1 من ${data.includeTactical || data.includeClips ? '2' : '1'}</span>
+      <span>صفحة 1 من ${hasSecondPage ? '2' : '1'}</span>
     </div>
   </div>
 
   <!-- ==================== PAGE 2: TACTICAL & CLIPS ==================== -->
-  ${(data.includeTactical || data.includeClips) ? `
+  ${hasSecondPage ? `
   <div class="report-page">
     <div class="rep-header">
       <div class="rep-brand">
