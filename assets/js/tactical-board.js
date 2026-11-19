@@ -124,6 +124,27 @@ const BUILTIN_DRILLS = [
       { id: 'curve1', type: 'arrow-curve', x1Rel: 0.52, y1Rel: 0.52, x2Rel: 0.88, y2Rel: 0.44, cxRel: 0.68, cyRel: 0.32, color: '#10B981' },
       { id: 'lbl4', type: 'text', xRel: 0.50, yRel: 0.15, text: 'ركلة حرة مقوسة حول حائط الصد ⚽🎯', color: '#00D4FF', fontSize: 13 },
     ]
+  },
+  {
+    id: 'drill_gk_reflex_cross',
+    name: 'حراسة المرمى: ردة الفعل والخروج للعرضيات 🧤',
+    category: 'تدريب حراس المرمى',
+    sport: 'soccer',
+    pitchView: 'half',
+    desc: 'تمرين حراسة مرمى تخصصي: تصدٍّ سريع لتسديدة أرضية قريبة يعقبه خروج حاسم لالتقاط كرة عرضية عالية.',
+    notes: 'إعداد كابتن الهواري بن عبد الله (مدرب حراس مرمى): التركيز على خطوة الصد السريعة والانقضاض بقبضة اليد.',
+    elements: [
+      { id: 'gk1', type: 'player', team: 'gk', num: '1', name: 'الحارس', xRel: 0.88, yRel: 0.50, color: '#FACC15' },
+      { id: 'c1', type: 'equipment', equipType: 'cone', xRel: 0.82, yRel: 0.42, rotation: 0 },
+      { id: 'c2', type: 'equipment', equipType: 'cone', xRel: 0.82, yRel: 0.58, rotation: 0 },
+      { id: 'hur1', type: 'equipment', equipType: 'hurdle', xRel: 0.85, yRel: 0.49, rotation: 90 },
+      { id: 'p_wing', type: 'player', team: 'away', num: '7', name: 'جناح عرضيات', xRel: 0.65, yRel: 0.22, color: '#FF6B6B' },
+      { id: 'p_striker', type: 'player', team: 'away', num: '9', name: 'مهاجم', xRel: 0.76, yRel: 0.50, color: '#FF6B6B' },
+      { id: 'b_cross', type: 'ball', xRel: 0.67, yRel: 0.22 },
+      { id: 'cross_arc', type: 'arrow-curve', x1Rel: 0.68, y1Rel: 0.24, x2Rel: 0.84, y2Rel: 0.46, cxRel: 0.72, cyRel: 0.38, color: '#10B981' },
+      { id: 'gk_move', type: 'arrow-move', x1Rel: 0.88, y1Rel: 0.50, x2Rel: 0.84, y2Rel: 0.47, color: '#FACC15' },
+      { id: 'lbl_gk', type: 'text', xRel: 0.55, yRel: 0.12, text: '🧤 تمرين حراس المرمى: خروج هوائي وتصدي مزدوج', color: '#FACC15', fontSize: 13 }
+    ]
   }
 ];
 

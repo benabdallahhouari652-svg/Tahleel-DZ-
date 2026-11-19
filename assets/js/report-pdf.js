@@ -82,6 +82,7 @@ function getReportFormData() {
     includeKpis: document.getElementById('rptIncKpis')?.checked ?? true,
     includeCharts: document.getElementById('rptIncCharts')?.checked ?? true,
     includeTactical: document.getElementById('rptIncTactical')?.checked ?? true,
+    includeHeatmap: document.getElementById('rptIncHeatmap')?.checked ?? true,
     includeClips: document.getElementById('rptIncClips')?.checked ?? true,
     includeRecommendations: document.getElementById('rptIncNotes')?.checked ?? true,
     includeSignatures: document.getElementById('rptIncSignatures')?.checked ?? true
@@ -104,6 +105,7 @@ function buildOfficialReportHtml(data) {
   const radarImg = captureCanvasImage('radarChart');
   const halfImg = captureCanvasImage('halfChart');
   const pitchImg = captureCanvasImage('pitchCanvas');
+  const heatmapImg = captureCanvasImage('heatmapCanvas');
   const clips = window.TrimmerState?.clips || [];
   const homeLogo = window.SquadState?.homeClub?.logo;
   const awayLogo = window.SquadState?.awayClub?.logo;
@@ -556,6 +558,19 @@ function buildOfficialReportHtml(data) {
       <div class="rep-section-title">⚽ الرسم التكتيكي وتمركز اللاعبين والمعدات</div>
       <div class="tac-pitch-box">
         <img src="${pitchImg}" alt="اللوحة التكتيكية">
+      </div>
+    </div>
+    ` : ''}
+
+    <!-- Heatmap & Shotmap Snapshot -->
+    ${data.includeHeatmap && heatmapImg ? `
+    <div class="rep-section">
+      <div class="rep-section-title">🔥 التحليل الحراري ومناطق الانتشار والتسديدات (Heatmap & Shot Analysis)</div>
+      <div class="tac-pitch-box">
+        <img src="${heatmapImg}" alt="التحليل الحراري">
+      </div>
+      <div style="font-size:8pt; color:#64748b; margin-top:4px; text-align:center;">
+        توزيع النشاط الميداني وكثافة التواجد ومسارات الضغط والتسديد (Opta / Wyscout Analytics Mode)
       </div>
     </div>
     ` : ''}
