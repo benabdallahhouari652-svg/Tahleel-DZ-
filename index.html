@@ -2226,10 +2226,51 @@
     "Tactical label"
   ]
 }));
+    translations.set("سجل التاغات", ["Journal des tags", "Tag log"]);
+    translations.set("نظام التاغينغ المتقدم", ["Marquage avancé", "Advanced tagging"]);
+    translations.set("بناء لوحة تاغ مخصصة", ["Créer un panneau de marquage", "Build a custom tag panel"]);
+    translations.set("منطقة التاغينغ المباشر", ["Marquage en direct", "Live tagging area"]);
+    translations.set("خريطة الاختصارات", ["Raccourcis clavier", "Keyboard shortcuts"]);
+    translations.set("اللوحة التكتيكية والتدريبية", ["Tableau tactique et entraînement", "Tactical and training board"]);
+    translations.set("التقارير والإحصائيات", ["Rapports et statistiques", "Reports and statistics"]);
+    translations.set("الأحداث حسب الشوط", ["Événements par mi-temps", "Events by half"]);
+    translations.set("الأداء الشامل", ["Performance globale", "Overall performance"]);
+    translations.set("تفاصيل التاغات", ["Détails des tags", "Tag details"]);
+    translations.set("مقارنة الفيديوهات", ["Comparaison des vidéos", "Video comparison"]);
+    translations.set("مقارنة الإحصائيات", ["Comparaison des statistiques", "Statistics comparison"]);
+    translations.set("مقارنة بيانية", ["Comparaison graphique", "Chart comparison"]);
+    translations.set("🛡️ استوديو إدارة الفرق وقائمة اللاعبين", ["🛡️ Gestion des équipes et des effectifs", "🛡️ Team and squad manager"]);
+    translations.set("🔥 التحليل الحراري", ["🔥 Cartes de chaleur", "🔥 Heatmaps"]);
+    translations.set("🤖 المساعد التكتيكي الذكي", ["🤖 Assistant tactique IA", "🤖 AI tactical assistant"]);
+    translations.set("🏅 مسيرة مهنية وخبرة ميدانية في خدمة الرياضة الجزائرية", ["🏅 Parcours et expérience au service du sport algérien", "🏅 Career and field experience in Algerian sport"]);
+    translations.set("استيراد فيديو جديد", ["Importer une nouvelle vidéo", "Import a new video"]);
+    translations.set("💾 حفظ الخطة التكتيكية / التمرين", ["💾 Enregistrer le plan tactique / l’exercice", "💾 Save tactical plan / drill"]);
+    translations.set("📂 مكتبة الخطط والتمارين التدريبية", ["📂 Bibliothèque de plans et d’exercices", "📂 Plans and drills library"]);
+    translations.set("🎥 تصدير لقطة فيديو مدمجة بالرسومات التكتيكية", ["🎥 Exporter un clip avec les dessins tactiques", "🎥 Export a clip with tactical drawings"]);
+    translations.set("✂️ حفظ اللقطة المقصوصة في قائمة المقاطع", ["✂️ Enregistrer l’extrait dans la liste", "✂️ Save the trimmed clip to the list"]);
+    translations.set("📄 إنشاء وتصدير تقرير المباراة الفني الرسمي (PDF)", ["📄 Créer et exporter le rapport officiel (PDF)", "📄 Create and export the official match report (PDF)"]);
+    translations.set("➕ إضافة لاعب جديد للقائمة", ["➕ Ajouter un joueur", "➕ Add a player"]);
+    translations.set("إلغاء", ["Annuler", "Cancel"]);
+    translations.set("حفظ", ["Enregistrer", "Save"]);
+    translations.set("إغلاق", ["Fermer", "Close"]);
+    translations.set("تم تبديل الثيم", ["Thème modifié", "Theme changed"]);
+    translations.set("تعذّر الحفظ في المتصفح؛ التغييرات متاحة في هذه الصفحة فقط", ["Impossible d’enregistrer dans le navigateur ; les modifications restent sur cette page.", "Could not save in the browser; changes are available on this page only."]);
+    translations.set("الرجاء إدخال اسم التاغ", ["Saisissez un nom de tag.", "Enter a tag name."]);
+    translations.set("تم تصدير التاغات بنجاح", ["Tags exportés.", "Tags exported."]);
+    translations.set("⚡ تم تشغيل الفيديو التجريبي بنجاح! يمكنك الآن تجربة الرسم والتقطيع", ["⚡ Vidéo de démonstration chargée. Vous pouvez dessiner et découper des clips.", "⚡ Demo video loaded. You can now draw and trim clips."]);
+    translations.set("تم تحميل: ", ["Fichier chargé : ", "File loaded: "]);
+    translations.set("سرعة التشغيل: ", ["Vitesse de lecture : ", "Playback speed: "]);
+    translations.set("تكبير الجدول الزمني", ["Zoom avant sur la timeline", "Timeline zoomed in"]);
+    translations.set("تصغير الجدول الزمني", ["Zoom arrière sur la timeline", "Timeline zoomed out"]);
+    translations.set("تم حذف اللقطة من القائمة", ["Clip supprimé de la liste.", "Clip removed from the list."]);
+    translations.set("تم مسح جميع الرسومات عن الفيديو", ["Tous les dessins ont été effacés.", "All drawings cleared."]);
+    translations.set("تراجع ↩", ["Annulé ↩", "Undone ↩"]);
+    translations.set("إعادة ↪", ["Rétabli ↪", "Redone ↪"]);
+    translations.set("📸 تم حفظ وتصدير لقطة الفيديو مع الرسومات بدقة عالية!", ["📸 Capture HD exportée avec les dessins !", "📸 HD snapshot exported with drawings!"]);
     const select = document.getElementById('uiLanguage');
     const originals = [];
     // Only translate known UI text, not video filenames, notes, or team data.
-    for (const root of document.querySelectorAll('#topNav, #view-dashboard, #view-analyzer')) {
+    for (const root of document.querySelectorAll('#topNav, main > .view, .modal-overlay')) {
       const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
       while (walker.nextNode()) {
         const node = walker.currentNode;
@@ -2247,6 +2288,16 @@
         }
       }
     }
+    window.tahleelTranslate = (message) => {
+      const index = ['fr', 'en'].indexOf(document.documentElement.lang);
+      if (index < 0 || typeof message !== 'string') return message;
+      const pair = translations.get(message);
+      if (pair) return pair[index];
+      for (const prefix of ['تم تحميل: ', 'سرعة التشغيل: ']) {
+        if (message.startsWith(prefix)) return translations.get(prefix)[index] + message.slice(prefix.length);
+      }
+      return message;
+    };
     function setLanguage(language) {
       const index = ['fr', 'en'].indexOf(language);
       if (index < 0) language = 'ar';
