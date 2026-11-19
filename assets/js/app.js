@@ -340,7 +340,7 @@ window.showToast = function(msg, type = 'info') {
   const toast = document.createElement('div');
   toast.className = `toast ${type}`;
   const icons = { success: '✓', error: '✕', info: 'ℹ' };
-  toast.innerHTML = `<span>${icons[type] || '•'}</span> ${escapeTagText(msg)}`;
+  toast.innerHTML = `<span>${icons[type] || '•'}</span> ${escapeTagText(window.tahleelTranslate?.(msg) ?? msg)}`;
   container.appendChild(toast);
   setTimeout(() => {
     toast.style.opacity = '0';
