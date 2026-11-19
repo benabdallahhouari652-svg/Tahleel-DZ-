@@ -15,6 +15,12 @@
       .analyzer-layout { grid-template-rows: minmax(0, 1fr); }
     }
   </style>
+  <style>
+    #uiLanguage { max-width: 7rem; padding: .35rem; color: var(--text); background: var(--bg-2); border: 1px solid var(--card-border); border-radius: 6px; }
+    .topnav__tabs { min-width: 0; justify-content: flex-start; }
+    .topnav__tabs .tab-btn { flex-shrink: 0; }
+    .topnav__brand { margin-left: 0; margin-inline-end: auto; }
+  </style>
 </head>
 <body class="app-shell">
 
@@ -72,6 +78,11 @@
     </nav>
 
     <div class="topnav__actions">
+      <select id="uiLanguage" aria-label="اللغة / Langue / Language" dir="auto">
+        <option value="ar" lang="ar">العربية</option>
+        <option value="fr" lang="fr">Français</option>
+        <option value="en" lang="en">English</option>
+      </select>
       <button class="btn-icon" id="themeToggle" title="تبديل الثيم">
         <svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="4" fill="currentColor"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.5"/></svg>
       </button>
@@ -455,7 +466,7 @@
           </div>
 
           <!-- Timeline -->
-          <div class="timeline-container" id="timelineContainer">
+          <div class="timeline-container" id="timelineContainer" dir="rtl">
             <div class="tl-header">
               <span class="tl-time" id="tlCurrentTime">0:00</span>
               <div class="tl-tools">
@@ -543,7 +554,7 @@
     <!-- ==============================
          VIEW 3: TAGGING SYSTEM
     =============================== -->
-    <section class="view" id="view-tagging">
+    <section class="view" id="view-tagging" lang="ar" dir="rtl">
       <div class="tagging-layout">
         <div class="tagging-header">
           <h2>نظام التاغينغ المتقدم</h2>
@@ -634,7 +645,7 @@
     <!-- ==============================
          VIEW 4: TACTICAL BOARD
     =============================== -->
-    <section class="view" id="view-tactical">
+    <section class="view" id="view-tactical" lang="ar" dir="rtl">
       <div class="tactical-layout">
         <div class="tactical-header">
           <div class="tactical-title-box">
@@ -870,7 +881,7 @@
     <!-- ==============================
          VIEW 5: REPORTS
     =============================== -->
-    <section class="view" id="view-reports">
+    <section class="view" id="view-reports" lang="ar" dir="rtl">
       <div class="reports-layout">
         <div class="reports-header">
           <h2>التقارير والإحصائيات</h2>
@@ -960,7 +971,7 @@
     <!-- ==============================
          VIEW 6: COMPARISON
     =============================== -->
-    <section class="view" id="view-compare">
+    <section class="view" id="view-compare" lang="ar" dir="rtl">
       <div class="compare-layout">
         <div class="compare-header">
           <h2>مقارنة الفيديوهات</h2>
@@ -1033,7 +1044,7 @@
     <!-- ==============================
          VIEW 7: SQUAD & TEAMS MANAGER
     =============================== -->
-    <section class="view" id="view-squad">
+    <section class="view" id="view-squad" lang="ar" dir="rtl">
       <div class="squad-layout">
 
         <!-- Header -->
@@ -1143,7 +1154,7 @@
     <!-- ==============================
          VIEW 7: HEATMAP & TOUCHMAP STUDIO
     =============================== -->
-    <section class="view" id="view-heatmap">
+    <section class="view" id="view-heatmap" lang="ar" dir="rtl">
       <div class="heatmap-layout">
         <!-- Sidebar Controls -->
         <aside class="heatmap-sidebar">
@@ -1242,7 +1253,7 @@
     <!-- ==============================
          VIEW 8: AI TACTICAL ASSISTANT
     =============================== -->
-    <section class="view" id="view-ai">
+    <section class="view" id="view-ai" lang="ar" dir="rtl">
       <div class="ai-assistant-layout">
         <!-- Sidebar: KPI Gauge & Quick Prompts -->
         <aside class="ai-sidebar">
@@ -1335,7 +1346,7 @@
     <!-- ==============================
          VIEW 9: ABOUT FOUNDER
     =============================== -->
-    <section class="view" id="view-about">
+    <section class="view" id="view-about" lang="ar" dir="rtl">
       <div class="about-view-wrapper">
         <div class="about-hero-card">
           <div class="about-avatar-wrapper">
@@ -1796,6 +1807,463 @@
     </div>
   </div>
 
+  <script>
+  (() => {
+    'use strict';
+    const translations = new Map(Object.entries({
+  "لوحة التحكم": [
+    "Tableau de bord",
+    "Dashboard"
+  ],
+  "محلل الفيديو": [
+    "Analyse vidéo",
+    "Video analyzer"
+  ],
+  "نظام التاغينغ": [
+    "Marquage",
+    "Tagging"
+  ],
+  "اللوحة التكتيكية": [
+    "Tableau tactique",
+    "Tactical board"
+  ],
+  "التقارير": [
+    "Rapports",
+    "Reports"
+  ],
+  "المقارنة": [
+    "Comparaison",
+    "Comparison"
+  ],
+  "الفرق واللاعبين": [
+    "Équipes et joueurs",
+    "Teams and players"
+  ],
+  "التحليل الحراري": [
+    "Cartes de chaleur",
+    "Heatmaps"
+  ],
+  "المساعد الذكي 🤖": [
+    "Assistant IA 🤖",
+    "AI assistant 🤖"
+  ],
+  "حول المطور": [
+    "À propos",
+    "About"
+  ],
+  "تبديل الثيم": [
+    "Changer le thème",
+    "Switch theme"
+  ],
+  "إعدادات": [
+    "Paramètres",
+    "Settings"
+  ],
+  "مرحباً بك في": [
+    "Bienvenue sur",
+    "Welcome to"
+  ],
+  "تحليل DZ": [
+    "Tahleel DZ",
+    "Tahleel DZ"
+  ],
+  "تحليل فيديو جديد": [
+    "Nouvelle analyse vidéo",
+    "New video analysis"
+  ],
+  "جلسة تاغينغ مباشر": [
+    "Session de marquage en direct",
+    "Live tagging session"
+  ],
+  "🎬 فيديو دليل المدرب وتنزيل الشرح": [
+    "🎬 Guide vidéo du coach",
+    "🎬 Coach video guide"
+  ],
+  "منصة تحليل الفيديو الرياضي الجزائرية الاحترافية — مستوحاة من Dartfish · LiveTag Pro · Once Sport": [
+    "Plateforme algérienne d’analyse vidéo sportive — inspirée de Dartfish · LiveTag Pro · Once Sport",
+    "Algerian sports video analysis platform — inspired by Dartfish · LiveTag Pro · Once Sport"
+  ],
+  "مباراة محللة": [
+    "Matchs analysés",
+    "Matches analyzed"
+  ],
+  "تاغ مُسجَّل": [
+    "Événements marqués",
+    "Events tagged"
+  ],
+  "مقطع مُصدَّر": [
+    "Clips exportés",
+    "Clips exported"
+  ],
+  "الجلسات الأخيرة": [
+    "Sessions récentes",
+    "Recent sessions"
+  ],
+  "عرض الكل": [
+    "Tout afficher",
+    "View all"
+  ],
+  "نهائي الدوري — الفريق أ vs الفريق ب": [
+    "Finale du championnat — Équipe A contre Équipe B",
+    "League final — Team A vs Team B"
+  ],
+  "كرة قدم · 90 دقيقة · 247 تاغ": [
+    "Football · 90 min · 247 tags",
+    "Football · 90 min · 247 tags"
+  ],
+  "ربع النهائي — كرة السلة": [
+    "Quart de finale — Basket-ball",
+    "Quarterfinal — Basketball"
+  ],
+  "كرة سلة · 48 دقيقة · 183 تاغ": [
+    "Basket-ball · 48 min · 183 tags",
+    "Basketball · 48 min · 183 tags"
+  ],
+  "مباراة البطولة — كرة اليد": [
+    "Match du championnat — Handball",
+    "Championship match — Handball"
+  ],
+  "كرة يد · 60 دقيقة · 312 تاغ": [
+    "Handball · 60 min · 312 tags",
+    "Handball · 60 min · 312 tags"
+  ],
+  "مكتمل": [
+    "Terminé",
+    "Complete"
+  ],
+  "معالجة": [
+    "En cours",
+    "Processing"
+  ],
+  "إحصائيات هذا الأسبوع": [
+    "Statistiques de la semaine",
+    "This week’s stats"
+  ],
+  "توزيع التاغات": [
+    "Répartition des tags",
+    "Tag breakdown"
+  ],
+  "ⓘ الوصول السريع": [
+    "ⓘ Accès rapide",
+    "ⓘ Quick access"
+  ],
+  "تاغينغ فوري": [
+    "Marquage rapide",
+    "Quick tagging"
+  ],
+  "مقارنة الفيديو": [
+    "Comparaison vidéo",
+    "Video comparison"
+  ],
+  "استيراد فيديو": [
+    "Importer une vidéo",
+    "Import video"
+  ],
+  "قائمة المقاطع": [
+    "Liste des clips",
+    "Clip list"
+  ],
+  "🎬 عرض الكل": [
+    "🎬 Tout lire",
+    "🎬 Play all"
+  ],
+  "📄 تقرير PDF": [
+    "📄 Rapport PDF",
+    "📄 PDF report"
+  ],
+  "+ قص": [
+    "+ Découper",
+    "+ Trim"
+  ],
+  "بحث في المقاطع التكتيكية...": [
+    "Rechercher un clip tactique…",
+    "Search tactical clips…"
+  ],
+  "🎨 أدوات التحليل:": [
+    "🎨 Outils d’analyse :",
+    "🎨 Analysis tools:"
+  ],
+  "📸 لقطة HD": [
+    "📸 Capture HD",
+    "📸 HD snapshot"
+  ],
+  "🎥 تصدير فيديو (Clip)": [
+    "🎥 Exporter un clip",
+    "🎥 Export video clip"
+  ],
+  "اختر ملف من جهازك": [
+    "Choisir un fichier sur votre appareil",
+    "Choose a file from your device"
+  ],
+  "أو": [
+    "ou",
+    "or"
+  ],
+  "⚡ تشغيل فيديو تجريبي": [
+    "⚡ Ouvrir une vidéo de démonstration",
+    "⚡ Open demo video"
+  ],
+  "يُنصح بـ MP4 أو WebM. دعم الصيغ الأخرى يعتمد على المتصفح.": [
+    "MP4 ou WebM recommandés. Les autres formats dépendent du navigateur.",
+    "MP4 or WebM recommended. Other formats depend on your browser."
+  ],
+  "⚡ لقطة 10 ثوانٍ": [
+    "⚡ Clip de 10 s",
+    "⚡ 10-second clip"
+  ],
+  "🔁 تكرار اللقطة": [
+    "🔁 Lire en boucle",
+    "🔁 Loop clip"
+  ],
+  "✂️ حفظ اللقطة": [
+    "✂️ Enregistrer le clip",
+    "✂️ Save clip"
+  ],
+  "🎥 تصدير اللقطة (MP4)": [
+    "🎥 Exporter le clip (MP4)",
+    "🎥 Export clip (MP4)"
+  ],
+  "نطاق اللقطة": [
+    "Plage du clip",
+    "Clip range"
+  ],
+  "هجوم": [
+    "Attaque",
+    "Attack"
+  ],
+  "دفاع": [
+    "Défense",
+    "Defense"
+  ],
+  "أهداف": [
+    "Buts",
+    "Goals"
+  ],
+  "أخطاء": [
+    "Fautes",
+    "Fouls"
+  ],
+  "لوحة التاغ": [
+    "Panneau de marquage",
+    "Tag panel"
+  ],
+  "✎ تعديل": [
+    "✎ Modifier",
+    "✎ Edit"
+  ],
+  "كرة القدم": [
+    "Football",
+    "Football"
+  ],
+  "كرة السلة": [
+    "Basket-ball",
+    "Basketball"
+  ],
+  "كرة اليد": [
+    "Handball",
+    "Handball"
+  ],
+  "كرة الطائرة": [
+    "Volley-ball",
+    "Volleyball"
+  ],
+  "الرغبي": [
+    "Rugby",
+    "Rugby"
+  ],
+  "وضع التاغ": [
+    "Mode marquage",
+    "Tag mode"
+  ],
+  "وضع الرسم": [
+    "Mode dessin",
+    "Drawing mode"
+  ],
+  "تكبير": [
+    "Zoom avant",
+    "Zoom in"
+  ],
+  "تصغير": [
+    "Zoom arrière",
+    "Zoom out"
+  ],
+  "أزرق نيون": [
+    "Bleu néon",
+    "Neon blue"
+  ],
+  "أصفر": [
+    "Jaune",
+    "Yellow"
+  ],
+  "أحمر": [
+    "Rouge",
+    "Red"
+  ],
+  "أخضر": [
+    "Vert",
+    "Green"
+  ],
+  "برتقالي": [
+    "Orange",
+    "Orange"
+  ],
+  "أبيض": [
+    "Blanc",
+    "White"
+  ],
+  "لون مخصص": [
+    "Couleur personnalisée",
+    "Custom color"
+  ],
+  "سماكة الخط": [
+    "Épaisseur du trait",
+    "Line width"
+  ],
+  "رفيع (2px)": [
+    "Fin (2 px)",
+    "Thin (2 px)"
+  ],
+  "متوسط (4px)": [
+    "Moyen (4 px)",
+    "Medium (4 px)"
+  ],
+  "سميك (6px)": [
+    "Épais (6 px)",
+    "Thick (6 px)"
+  ],
+  "عريض (8px)": [
+    "Très épais (8 px)",
+    "Extra thick (8 px)"
+  ],
+  "تراجع (Ctrl+Z)": [
+    "Annuler (Ctrl+Z)",
+    "Undo (Ctrl+Z)"
+  ],
+  "إعادة (Ctrl+Y)": [
+    "Rétablir (Ctrl+Y)",
+    "Redo (Ctrl+Y)"
+  ],
+  "مسح كل الرسومات": [
+    "Effacer tous les dessins",
+    "Clear all drawings"
+  ],
+  "تصدير لقطة الفيديو الحالية مع الرسومات كصورة HD": [
+    "Enregistrer l’image avec les dessins en HD",
+    "Save the frame with drawings in HD"
+  ],
+  "تصدير وتسجيل لقطة فيديو مدمجة بالرسومات التكتيكية (MP4 / WebM)": [
+    "Exporter le clip avec les dessins tactiques (MP4 / WebM)",
+    "Export clip with tactical drawings (MP4 / WebM)"
+  ]
+}));
+    const toolTitles = new Map(Object.entries({
+  "spotlight": [
+    "Projecteur",
+    "Spotlight"
+  ],
+  "magnifier": [
+    "Loupe",
+    "Magnifier"
+  ],
+  "player-ring": [
+    "Anneau sous le joueur",
+    "Player ring"
+  ],
+  "player-badge": [
+    "Badge du joueur",
+    "Player badge"
+  ],
+  "player-link": [
+    "Lien tactique et distance",
+    "Tactical link and distance"
+  ],
+  "arrow": [
+    "Flèche droite",
+    "Straight arrow"
+  ],
+  "curved-arrow": [
+    "Flèche courbe",
+    "Curved arrow"
+  ],
+  "aerial-pass": [
+    "Arc de passe aérienne",
+    "Lofted pass arc"
+  ],
+  "dribble": [
+    "Trajectoire de dribble",
+    "Dribble path"
+  ],
+  "offside-line": [
+    "Ligne de hors-jeu",
+    "Offside line"
+  ],
+  "space-polygon": [
+    "Zone d’espace libre",
+    "Free-space zone"
+  ],
+  "circle": [
+    "Cercle",
+    "Circle"
+  ],
+  "rect": [
+    "Rectangle tactique",
+    "Tactical rectangle"
+  ],
+  "angle": [
+    "Mesure d’angle",
+    "Angle measurement"
+  ],
+  "laser": [
+    "Laser",
+    "Laser"
+  ],
+  "freehand": [
+    "Dessin à main levée",
+    "Freehand"
+  ],
+  "text": [
+    "Étiquette tactique",
+    "Tactical label"
+  ]
+}));
+    const select = document.getElementById('uiLanguage');
+    const originals = [];
+    // Only translate known UI text, not video filenames, notes, or team data.
+    for (const root of document.querySelectorAll('#topNav, #view-dashboard, #view-analyzer')) {
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      while (walker.nextNode()) {
+        const node = walker.currentNode;
+        const original = node.nodeValue;
+        const pair = translations.get(original.trim());
+        if (pair) originals.push((index) => {
+          node.nodeValue = index < 0 ? original : original.replace(original.trim(), pair[index]);
+        });
+      }
+      for (const element of root.querySelectorAll('[title], [placeholder]')) {
+        for (const attr of ['title', 'placeholder']) {
+          const original = element.getAttribute(attr);
+          const pair = (attr === 'title' && toolTitles.get(element.dataset.tool)) || translations.get(original);
+          if (pair) originals.push((index) => element.setAttribute(attr, index < 0 ? original : pair[index]));
+        }
+      }
+    }
+    function setLanguage(language) {
+      const index = ['fr', 'en'].indexOf(language);
+      if (index < 0) language = 'ar';
+      document.documentElement.lang = language;
+      document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
+      document.title = index < 0 ? originalTitle : ['Tahleel DZ — Analyse vidéo sportive', 'Tahleel DZ — Sports video analysis'][index];
+      select.value = language;
+      originals.forEach(update => update(index));
+      try { localStorage.setItem('tahleel-ui-language', language); } catch {}
+    }
+    const originalTitle = document.title;
+    let preference = 'ar';
+    try { preference = localStorage.getItem('tahleel-ui-language') || 'ar'; } catch {}
+    select.addEventListener('change', () => setLanguage(select.value));
+    setLanguage(preference);
+  })();
+  </script>
   <script src="assets/js/app.js"></script>
   <script src="assets/js/video-player.js"></script>
   <script src="assets/js/tagging.js"></script>
