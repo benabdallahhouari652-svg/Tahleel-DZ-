@@ -111,14 +111,17 @@ function buildOfficialReportHtml(data) {
   const awayLogo = window.SquadState?.awayClub?.logo;
   const squadPlayers = window.SquadState?.players || [];
 
+  const language = ['fr', 'en'].includes(document.documentElement.lang) ? document.documentElement.lang : 'ar';
+  const direction = language === 'ar' ? 'rtl' : 'ltr';
+  const tr = (ar, fr, en) => language === 'fr' ? fr : language === 'en' ? en : ar;
   const hasSecondPage = data.includeTactical || data.includeHeatmap || data.includeClips;
 
   return `
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="${language}" dir="${direction}">
 <head>
   <meta charset="UTF-8">
-  <title>تقرير التحليل الفني — ${escapeHtml(data.homeTeam)} vs ${escapeHtml(data.awayTeam)}</title>
+  <title>${tr("تقرير التحليل الفني", "Rapport d’analyse tactique", "Tactical analysis report")} — ${escapeHtml(data.homeTeam)} vs ${escapeHtml(data.awayTeam)}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -442,13 +445,13 @@ function buildOfficialReportHtml(data) {
       <div class="rep-brand">
         <div class="rep-logo-pill">🎯 تحليل DZ</div>
         <div class="rep-brand-text">
-          <h1>تقرير التحليل الفني والإحصائي للمباراة</h1>
-          <p>منصة تحليل الفيديو الرياضي الاحترافية — الاتحاد الجزائري والأندية المحترفة</p>
+          <h1>${tr("تقرير التحليل الفني والإحصائي للمباراة", "Rapport tactique et statistique du match", "Match tactical and statistical report")}</h1>
+          <p>${tr("منصة تحليل الفيديو الرياضي الاحترافية — الاتحاد الجزائري والأندية المحترفة", "Plateforme professionnelle d’analyse vidéo sportive — fédération algérienne et clubs professionnels", "Professional sports video analysis platform — Algerian federation and professional clubs")}</p>
         </div>
       </div>
       <div class="rep-doc-meta">
-        <div><strong>التاريخ:</strong> ${escapeHtml(data.matchDate)}</div>
-        <div><strong>المحلل:</strong> ${escapeHtml(data.analystName)}</div>
+        <div><strong>${tr("التاريخ:", "Date :", "Date:")}</strong> ${escapeHtml(data.matchDate)}</div>
+        <div><strong>${tr("المحلل:", "Analyste :", "Analyst:")}</strong> ${escapeHtml(data.analystName)}</div>
       </div>
     </div>
 
@@ -477,27 +480,27 @@ function buildOfficialReportHtml(data) {
     ${data.includeKpis ? `
     <div class="kpi-row">
       <div class="kpi-item accent">
-        <div class="kpi-title">إجمالي التاغات</div>
+        <div class="kpi-title">${tr("إجمالي التاغات", "Nombre total de tags", "Total tags")}</div>
         <div class="kpi-num">247</div>
       </div>
       <div class="kpi-item">
-        <div class="kpi-title">نسبة الاستحواذ</div>
+        <div class="kpi-title">${tr("نسبة الاستحواذ", "Possession", "Possession")}</div>
         <div class="kpi-num">62%</div>
       </div>
       <div class="kpi-item">
-        <div class="kpi-title">دقة التمريرات</div>
+        <div class="kpi-title">${tr("دقة التمريرات", "Précision des passes", "Pass accuracy")}</div>
         <div class="kpi-num">84%</div>
       </div>
       <div class="kpi-item accent">
-        <div class="kpi-title">الأهداف</div>
+        <div class="kpi-title">${tr("الأهداف", "Buts", "Goals")}</div>
         <div class="kpi-num">${escapeHtml(data.homeScore)}</div>
       </div>
       <div class="kpi-item">
-        <div class="kpi-title">الأخطاء</div>
+        <div class="kpi-title">${tr("الأخطاء", "Fautes", "Fouls")}</div>
         <div class="kpi-num">14</div>
       </div>
       <div class="kpi-item accent">
-        <div class="kpi-title">الأهداف المتوقعة xG</div>
+        <div class="kpi-title">${tr("الأهداف المتوقعة xG", "Buts attendus (xG)", "Expected goals (xG)")}</div>
         <div class="kpi-num">2.35</div>
       </div>
     </div>
@@ -505,26 +508,26 @@ function buildOfficialReportHtml(data) {
 
     <!-- Executive Summary -->
     <div class="rep-section">
-      <div class="rep-section-title">📋 الملخص التكتيكي التنفيذي للمدرب</div>
+      <div class="rep-section-title">${tr("📋 الملخص التكتيكي التنفيذي للمدرب", "📋 Synthèse tactique de l’entraîneur", "📋 Coach’s tactical summary")}</div>
       <div class="summary-box">
-        <strong>خلاصة الأداء: </strong>${escapeHtml(data.execSummary)}
+        <strong>${tr("خلاصة الأداء: ", "Bilan de la performance : ", "Performance summary: ")}</strong>${escapeHtml(data.execSummary)}
       </div>
     </div>
 
     <!-- Charts Section -->
     ${data.includeCharts && (halfImg || radarImg) ? `
     <div class="rep-section">
-      <div class="rep-section-title">📊 الرسوم البيانية ومؤشرات الأداء</div>
+      <div class="rep-section-title">${tr("📊 الرسوم البيانية ومؤشرات الأداء", "📊 Graphiques et indicateurs de performance", "📊 Performance charts and metrics")}</div>
       <div class="charts-grid">
         ${halfImg ? `
         <div class="chart-box">
-          <h4>توزيع الأحداث والضغط حسب الشوطين</h4>
+          <h4>${tr("توزيع الأحداث والضغط حسب الشوطين", "Événements et pressing par mi-temps", "Events and pressing by half")}</h4>
           <img src="${halfImg}" alt="أحداث الشوطين">
         </div>
         ` : ''}
         ${radarImg ? `
         <div class="chart-box">
-          <h4>مخطط رادار الأداء الشامل (Radar Chart)</h4>
+          <h4>${tr("مخطط رادار الأداء الشامل (Radar Chart)", "Diagramme radar de la performance globale", "Overall performance radar chart")}</h4>
           <img src="${radarImg}" alt="رادار الأداء">
         </div>
         ` : ''}
@@ -533,8 +536,8 @@ function buildOfficialReportHtml(data) {
     ` : ''}
 
     <div class="rep-footer">
-      <span>🎯 تقرير رسمي صادر عن منصة تحليل DZ (Tahleel DZ Pro)</span>
-      <span>صفحة 1 من ${hasSecondPage ? '2' : '1'}</span>
+      <span>${tr("🎯 تقرير رسمي صادر عن منصة تحليل DZ (Tahleel DZ Pro)", "🎯 Rapport officiel de Tahleel DZ Pro", "🎯 Official report from Tahleel DZ Pro")}</span>
+      <span>${tr('صفحة 1 من', 'Page 1 sur', 'Page 1 of')} ${hasSecondPage ? '2' : '1'}</span>
     </div>
   </div>
 
@@ -545,19 +548,19 @@ function buildOfficialReportHtml(data) {
       <div class="rep-brand">
         <div class="rep-logo-pill">🎯 تحليل DZ</div>
         <div class="rep-brand-text">
-          <h1>التشكيلة التكتيكية وتفاصيل اللقطات المفتاحية</h1>
+          <h1>${tr("التشكيلة التكتيكية وتفاصيل اللقطات المفتاحية", "Composition tactique et séquences clés", "Tactical lineup and key clips")}</h1>
           <p>${escapeHtml(data.homeTeam)} vs ${escapeHtml(data.awayTeam)} — ${escapeHtml(data.compName)}</p>
         </div>
       </div>
       <div class="rep-doc-meta">
-        <div><strong>تاريخ الطباعة:</strong> ${new Date().toLocaleDateString('ar-DZ')}</div>
+        <div><strong>${tr("تاريخ الطباعة:", "Date d’impression :", "Print date:")}</strong> ${new Date().toLocaleDateString('ar-DZ')}</div>
       </div>
     </div>
 
     <!-- Tactical Board Snapshot -->
     ${data.includeTactical && pitchImg ? `
     <div class="rep-section">
-      <div class="rep-section-title">⚽ الرسم التكتيكي وتمركز اللاعبين والمعدات</div>
+      <div class="rep-section-title">${tr("⚽ الرسم التكتيكي وتمركز اللاعبين والمعدات", "⚽ Schéma tactique et positionnement", "⚽ Tactical diagram and positioning")}</div>
       <div class="tac-pitch-box">
         <img src="${pitchImg}" alt="اللوحة التكتيكية">
       </div>
@@ -567,7 +570,7 @@ function buildOfficialReportHtml(data) {
     <!-- Heatmap & Shotmap Snapshot -->
     ${data.includeHeatmap && heatmapImg ? `
     <div class="rep-section">
-      <div class="rep-section-title">🔥 التحليل الحراري ومناطق الانتشار والتسديدات (Heatmap & Shot Analysis)</div>
+      <div class="rep-section-title">${tr("🔥 التحليل الحراري ومناطق الانتشار والتسديدات (Heatmap & Shot Analysis)", "🔥 Carte de chaleur et analyse des tirs", "🔥 Heatmap and shot analysis")}</div>
       <div class="tac-pitch-box">
         <img src="${heatmapImg}" alt="التحليل الحراري">
       </div>
@@ -604,12 +607,12 @@ function buildOfficialReportHtml(data) {
         <thead>
           <tr>
             <th style="width:40px;">#</th>
-            <th>عنوان اللقطة التكتيكية</th>
-            <th>النوع</th>
-            <th>التوقيت</th>
-            <th>المدة</th>
-            <th>التوجيه الفني للمدرب</th>
-            <th>التقييم</th>
+            <th>${tr("عنوان اللقطة التكتيكية", "Titre du clip tactique", "Tactical clip title")}</th>
+            <th>${tr("النوع", "Type", "Type")}</th>
+            <th>${tr("التوقيت", "Temps", "Time")}</th>
+            <th>${tr("المدة", "Durée", "Duration")}</th>
+            <th>${tr("التوجيه الفني للمدرب", "Consignes de l’entraîneur", "Coach’s instructions")}</th>
+            <th>${tr("التقييم", "Évaluation", "Rating")}</th>
           </tr>
         </thead>
         <tbody>
@@ -636,19 +639,19 @@ function buildOfficialReportHtml(data) {
     <!-- Recommendations -->
     ${data.includeRecommendations ? `
     <div class="rep-section">
-      <div class="rep-section-title">💡 توصيات الطاقم الفني للمباراة القادمة</div>
+      <div class="rep-section-title">${tr("💡 توصيات الطاقم الفني للمباراة القادمة", "💡 Recommandations pour le prochain match", "💡 Recommendations for the next match")}</div>
       <ul class="recom-list">
         <li class="recom-item">
-          <span class="recom-badge">توصية 1</span>
-          <span>مواصلة الضغط العالي الموجه على قلبي دفاع المنافس لاسترجاع الكرة في مناطق الخطورة.</span>
+          <span class="recom-badge">${tr("توصية 1", "Recommandation 1", "Recommendation 1")}</span>
+          <span>${tr("مواصلة الضغط العالي الموجه على قلبي دفاع المنافس لاسترجاع الكرة في مناطق الخطورة.", "Maintenir le pressing haut sur les défenseurs centraux adverses pour récupérer le ballon dans les zones dangereuses.", "Keep pressing the opposing center backs high to regain possession in dangerous areas.")}</span>
         </li>
         <li class="recom-item">
-          <span class="recom-badge">توصية 2</span>
-          <span>تأمين التغطية العكسية للظهيرين عند التحول الدفاعي وسرعة الارتداد خلف خط الكرة.</span>
+          <span class="recom-badge">${tr("توصية 2", "Recommandation 2", "Recommendation 2")}</span>
+          <span>${tr("تأمين التغطية العكسية للظهيرين عند التحول الدفاعي وسرعة الارتداد خلف خط الكرة.", "Assurer la couverture des latéraux à la transition défensive et revenir rapidement derrière le ballon.", "Cover the fullbacks in defensive transition and recover quickly behind the ball.")}</span>
         </li>
         <li class="recom-item">
-          <span class="recom-badge">توصية 3</span>
-          <span>استغلال مهارة الجناحين في عزل المدافع (1 ضد 1) ولعب العرضيات الساقطة على القائم الثاني.</span>
+          <span class="recom-badge">${tr("توصية 3", "Recommandation 3", "Recommendation 3")}</span>
+          <span>${tr("استغلال مهارة الجناحين في عزل المدافع (1 ضد 1) ولعب العرضيات الساقطة على القائم الثاني.", "Isoler le défenseur en un contre un avec les ailiers et centrer au second poteau.", "Use the wingers to isolate defenders one-on-one and cross toward the far post.")}</span>
         </li>
       </ul>
     </div>
@@ -658,20 +661,20 @@ function buildOfficialReportHtml(data) {
     ${data.includeSignatures ? `
     <div class="sig-section">
       <div class="sig-box">
-        <div class="sig-title">اعتماد المدير الفني (Head Coach)</div>
+        <div class="sig-title">${tr("اعتماد المدير الفني (Head Coach)", "Validation de l’entraîneur principal", "Head coach approval")}</div>
         <div class="sig-name">${escapeHtml(data.coachName)}</div>
         <div class="sig-line"></div>
-        <div class="sig-caption">التوقيع والتاريخ</div>
+        <div class="sig-caption">${tr("التوقيع والتاريخ", "Signature et date", "Signature and date")}</div>
       </div>
       <div class="sig-box">
-        <div class="sig-title">رئيس قسم تحليل الأداء الرياضي</div>
+        <div class="sig-title">${tr("رئيس قسم تحليل الأداء الرياضي", "Responsable de l’analyse de la performance", "Head of performance analysis")}</div>
         <div class="sig-name">${escapeHtml(data.analystName)}</div>
         <div class="sig-line"></div>
-        <div class="sig-caption">التوقيع والاعتماد</div>
+        <div class="sig-caption">${tr("التوقيع والاعتماد", "Signature et validation", "Signature and approval")}</div>
       </div>
       <div class="sig-box">
-        <div class="sig-title">ختم النادي / الهيئة الرياضية</div>
-        <div class="sig-name" style="color:#94a3b8;">[ الختم الرسمي ]</div>
+        <div class="sig-title">${tr("ختم النادي / الهيئة الرياضية", "Cachet du club / de l’organisme sportif", "Club / sports body stamp")}</div>
+        <div class="sig-name" style="color:#94a3b8;">${tr("[ الختم الرسمي ]", "[ Cachet officiel ]", "[ Official stamp ]")}</div>
         <div class="sig-line"></div>
         <div class="sig-caption">تأشيرة الإدارة الفنية</div>
       </div>
@@ -679,8 +682,8 @@ function buildOfficialReportHtml(data) {
     ` : ''}
 
     <div class="rep-footer">
-      <span>🎯 تقرير رسمي صادر عن منصة تحليل DZ (Tahleel DZ Pro)</span>
-      <span>صفحة 2 من 2</span>
+      <span>${tr("🎯 تقرير رسمي صادر عن منصة تحليل DZ (Tahleel DZ Pro)", "🎯 Rapport officiel de Tahleel DZ Pro", "🎯 Official report from Tahleel DZ Pro")}</span>
+      <span>${tr('صفحة 2 من 2', 'Page 2 sur 2', 'Page 2 of 2')}</span>
     </div>
   </div>
   ` : ''}
